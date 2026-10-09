@@ -314,6 +314,69 @@ html, body {
 }
 .foot b { color: #c9c9d2; }
 
+/* --------------------------- 底部 Star 引导 --------------------------- */
+
+.cta-foot {
+  grid-column: 1 / -1;
+  margin-top: 34px;
+  padding: 24px 26px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1c1c24 0%, #16161c 60%);
+  border: 1px solid #2b2b36;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.cta-foot .cf-l { flex: 1; min-width: 260px; }
+.cta-foot .cf-t { font-size: 19px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+.cta-foot .cf-s { font-size: 13px; color: #a9a9b5; margin-top: 7px; line-height: 1.7; }
+.cta-foot .cf-s b { color: #ffc72c; }
+.cta-foot .cf-x { color: #75757f; font-size: 12px; }
+
+.cta-foot .cf-r { flex: none; display: flex; flex-direction: column; gap: 9px; align-items: stretch; }
+.cf-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 26px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--gold);
+  color: #3a2a00;
+  white-space: nowrap;
+  transition: filter 0.15s;
+}
+.cf-btn:hover { filter: brightness(1.06); }
+.cf-btn.ghost {
+  background: transparent;
+  color: #c9c9d2;
+  border: 1px solid #3a3a46;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 26px;
+}
+.cf-btn.ghost:hover { border-color: #55555f; color: #fff; }
+.cf-ok {
+  font-size: 12px;
+  color: #3ddc84;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cf-ok.on { opacity: 1; }
+
+@media (max-width: 900px) {
+  .cta-foot { padding: 20px 18px; gap: 18px; margin-top: 24px; }
+  .cta-foot .cf-r { width: 100%; }
+  .cf-btn { padding: 13px 20px; }
+}
+
+
 </style>
 </head>
 <body>
@@ -324,7 +387,7 @@ html, body {
     <h1>你这一单，还能再省多少？</h1>
     <p>
       基于麦当劳中国官方 MCP 的<b>价格 × 热量双目标</b>点餐优化器。
-      下面是<b>真实门店数据快照</b>（北京建外SOHO A座，116 个餐品）与<b>同一套算法</b>的离线版本 ——
+      下面是<b>真实门店数据快照</b>（北京建外SOHO A座，114 个在售餐品）与<b>同一套算法</b>的离线版本 ——
       不需要 Token，直接就能玩。
     </p>
     <ul class="pts">
@@ -356,6 +419,24 @@ html, body {
         </div>
         <button class="cta" id="optBtn" disabled>优化一下</button>
       </div>
+    </div>
+  </div>
+
+  <div class="cta-foot">
+    <div class="cf-l">
+      <div class="cf-t">它帮你省到钱了吗？</div>
+      <div class="cf-s">
+        这是「<b>麦当劳程序员创意开发大赛</b>」的参赛作品。给个 ⭐ 能让更多麦友看到它，
+        也是我这次唯一的胜负手。<br />
+        <span class="cf-x">（不点也没关系 —— 工具本身照用，数据都在你本地算。）</span>
+      </div>
+    </div>
+    <div class="cf-r">
+      <a class="cf-btn" id="starBtn" href="https://github.com/Monekey/mcd-meal-optimizer" target="_blank" rel="noopener">
+        ⭐ 去 GitHub 点 Star
+      </a>
+      <button class="cf-btn ghost" id="copyBtn" type="button">🔗 复制链接，分享给朋友</button>
+      <div class="cf-ok" id="copyOk">已复制 ✓ 粘贴到微信里发出去就行</div>
     </div>
   </div>
 </div>
@@ -1530,6 +1611,45 @@ renderRail();
 renderList();
 renderCart();
 
+</script>
+
+<script>
+/* 底部 Star 引导的「复制链接」—— 让访客能把 demo 链接直接发到微信里，
+   这是比小红书跳转短得多的转化路径（点开即 demo，demo 上就有 Star 按钮）。 */
+(function () {
+  var PAGE_URL = 'https://monekey.github.io/mcd-meal-optimizer/';
+  var btn = document.getElementById('copyBtn');
+  var ok = document.getElementById('copyOk');
+  if (!btn || !ok) return;
+
+  function done() {
+    ok.classList.add('on');
+    setTimeout(function () { ok.classList.remove('on'); }, 2800);
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    var copied = false;
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    document.body.removeChild(ta);
+    if (copied) done();
+    else window.prompt('复制这个链接分享给朋友：', text);
+  }
+
+  btn.addEventListener('click', function () {
+    var text = '麦当劳这样点能省一半 → ' + PAGE_URL + '  （不用装任何东西，点开就能玩）';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text); });
+    } else {
+      fallback(text);
+    }
+  });
+})();
 </script>
 </body>
 </html>

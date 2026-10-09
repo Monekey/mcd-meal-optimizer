@@ -16,7 +16,7 @@
     <h1>你这一单，还能再省多少？</h1>
     <p>
       基于麦当劳中国官方 MCP 的<b>价格 × 热量双目标</b>点餐优化器。
-      下面是<b>真实门店数据快照</b>（北京建外SOHO A座，116 个餐品）与<b>同一套算法</b>的离线版本 ——
+      下面是<b>真实门店数据快照</b>（北京建外SOHO A座，114 个在售餐品）与<b>同一套算法</b>的离线版本 ——
       不需要 Token，直接就能玩。
     </p>
     <ul class="pts">
@@ -50,6 +50,24 @@
       </div>
     </div>
   </div>
+
+  <div class="cta-foot">
+    <div class="cf-l">
+      <div class="cf-t">它帮你省到钱了吗？</div>
+      <div class="cf-s">
+        这是「<b>麦当劳程序员创意开发大赛</b>」的参赛作品。给个 ⭐ 能让更多麦友看到它，
+        也是我这次唯一的胜负手。<br />
+        <span class="cf-x">（不点也没关系 —— 工具本身照用，数据都在你本地算。）</span>
+      </div>
+    </div>
+    <div class="cf-r">
+      <a class="cf-btn" id="starBtn" href="https://github.com/Monekey/mcd-meal-optimizer" target="_blank" rel="noopener">
+        ⭐ 去 GitHub 点 Star
+      </a>
+      <button class="cf-btn ghost" id="copyBtn" type="button">🔗 复制链接，分享给朋友</button>
+      <div class="cf-ok" id="copyOk">已复制 ✓ 粘贴到微信里发出去就行</div>
+    </div>
+  </div>
 </div>
 
 <div class="mask" id="mask"></div>
@@ -62,6 +80,45 @@
 /*__CORE__*/
 /*__DATA__*/
 /*__APP__*/
+</script>
+
+<script>
+/* 底部 Star 引导的「复制链接」—— 让访客能把 demo 链接直接发到微信里，
+   这是比小红书跳转短得多的转化路径（点开即 demo，demo 上就有 Star 按钮）。 */
+(function () {
+  var PAGE_URL = 'https://monekey.github.io/mcd-meal-optimizer/';
+  var btn = document.getElementById('copyBtn');
+  var ok = document.getElementById('copyOk');
+  if (!btn || !ok) return;
+
+  function done() {
+    ok.classList.add('on');
+    setTimeout(function () { ok.classList.remove('on'); }, 2800);
+  }
+  function fallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    var copied = false;
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    document.body.removeChild(ta);
+    if (copied) done();
+    else window.prompt('复制这个链接分享给朋友：', text);
+  }
+
+  btn.addEventListener('click', function () {
+    var text = '麦当劳这样点能省一半 → ' + PAGE_URL + '  （不用装任何东西，点开就能玩）';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text); });
+    } else {
+      fallback(text);
+    }
+  });
+})();
 </script>
 </body>
 </html>

@@ -306,3 +306,66 @@ html, body {
   display: flex; flex-wrap: wrap; gap: 8px 22px;
 }
 .foot b { color: #c9c9d2; }
+
+/* --------------------------- 底部 Star 引导 --------------------------- */
+
+.cta-foot {
+  grid-column: 1 / -1;
+  margin-top: 34px;
+  padding: 24px 26px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #1c1c24 0%, #16161c 60%);
+  border: 1px solid #2b2b36;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.cta-foot .cf-l { flex: 1; min-width: 260px; }
+.cta-foot .cf-t { font-size: 19px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+.cta-foot .cf-s { font-size: 13px; color: #a9a9b5; margin-top: 7px; line-height: 1.7; }
+.cta-foot .cf-s b { color: #ffc72c; }
+.cta-foot .cf-x { color: #75757f; font-size: 12px; }
+
+.cta-foot .cf-r { flex: none; display: flex; flex-direction: column; gap: 9px; align-items: stretch; }
+.cf-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 26px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--gold);
+  color: #3a2a00;
+  white-space: nowrap;
+  transition: filter 0.15s;
+}
+.cf-btn:hover { filter: brightness(1.06); }
+.cf-btn.ghost {
+  background: transparent;
+  color: #c9c9d2;
+  border: 1px solid #3a3a46;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 26px;
+}
+.cf-btn.ghost:hover { border-color: #55555f; color: #fff; }
+.cf-ok {
+  font-size: 12px;
+  color: #3ddc84;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.cf-ok.on { opacity: 1; }
+
+@media (max-width: 900px) {
+  .cta-foot { padding: 20px 18px; gap: 18px; margin-top: 24px; }
+  .cta-foot .cf-r { width: 100%; }
+  .cf-btn { padding: 13px 20px; }
+}
+
