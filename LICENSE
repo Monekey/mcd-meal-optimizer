@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 麦麦点餐官 (McOrder) contributors
+Copyright (c) 2026 麦麦点餐官 (McOrder)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,9 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-本项目为「麦当劳程序员创意开发大赛」参赛作品，由参赛者独立开发，
-非麦当劳官方产品。麦当劳及其关联方的商标、餐品信息、价格与权益
-归其权利人所有；本项目仅通过麦当劳中国公开提供的 MCP 服务读取数据。
