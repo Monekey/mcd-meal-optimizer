@@ -1,0 +1,312 @@
+/* 麦麦点餐官 · 界面样式
+   移动端优先；桌面下居中成手机框。
+   配色向麦当劳品牌靠拢，但不使用任何官方 Logo，避免暗示官方背书。 */
+
+:root {
+  --brand: #db0007;
+  --brand-dark: #a80005;
+  --brand-soft: #fff1f0;
+  --gold: #ffc72c;
+  --ink: #1a1a1a;
+  --ink-2: #5c5c5c;
+  --ink-3: #9a9a9a;
+  --line: #ececec;
+  --bg: #f5f5f7;
+  --card: #fff;
+  --ok: #12a150;
+  --ok-soft: #e8f7ee;
+  --radius: 12px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: #e9e9ec;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+input, select { font: inherit; }
+
+/* ------------------------------ 手机外框 ------------------------------ */
+
+#phone {
+  position: relative;
+  max-width: 430px;
+  height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media (min-width: 460px) {
+  body { padding: 16px 0; }
+  #phone {
+    height: calc(100dvh - 32px);
+    border-radius: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+  }
+}
+
+/* ------------------------------ 顶栏 ------------------------------ */
+
+.topbar {
+  flex: none;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px 8px;
+}
+.mode-switch {
+  display: flex;
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 8px;
+}
+.mode-switch button {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ink-2);
+  transition: all 0.18s;
+}
+.mode-switch button.on {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+}
+.store-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 2px;
+}
+.store-bar .pin { font-size: 15px; }
+.store-bar .nm {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.store-bar .sub { font-size: 11px; color: var(--ink-3); font-weight: 400; }
+.store-bar .chg { font-size: 12px; color: var(--brand); font-weight: 600; flex: none; }
+.badge-nonofficial {
+  font-size: 10px;
+  color: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 4px;
+  flex: none;
+}
+
+/* ------------------------------ 主体 ------------------------------ */
+
+.body { flex: 1; display: flex; min-height: 0; }
+
+.rail {
+  flex: none;
+  width: 88px;
+  background: #f0f0f2;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.rail button {
+  display: block;
+  width: 100%;
+  padding: 13px 6px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--ink-2);
+  text-align: center;
+  border-left: 3px solid transparent;
+}
+.rail button.on {
+  background: #fff;
+  color: var(--ink);
+  font-weight: 600;
+  border-left-color: var(--brand);
+}
+
+.list { flex: 1; overflow-y: auto; padding: 8px 10px 16px; -webkit-overflow-scrolling: touch; }
+
+.item {
+  display: flex;
+  gap: 10px;
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 10px;
+  margin-bottom: 8px;
+}
+.item img, .item .ph {
+  width: 68px; height: 68px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--bg);
+  flex: none;
+}
+.item .info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.item .nm { font-size: 13px; font-weight: 600; line-height: 1.35; }
+.item .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+.tag {
+  font-size: 10px; padding: 1px 5px; border-radius: 3px;
+  background: var(--bg); color: var(--ink-2);
+}
+.tag.card { background: #fff6e0; color: #9a6a00; }
+.tag.kcal { background: #eef4ff; color: #2f5fa8; }
+.item .price { margin-top: auto; display: flex; align-items: flex-end; gap: 6px; }
+.item .now { font-size: 15px; font-weight: 700; color: var(--brand); }
+.item .was { font-size: 11px; color: var(--ink-3); text-decoration: line-through; }
+.add {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--brand); color: #fff;
+  font-size: 18px; line-height: 24px; text-align: center;
+  flex: none; align-self: flex-end;
+}
+.add:active { background: var(--brand-dark); }
+
+/* ------------------------------ 底部 ------------------------------ */
+
+.bottom { flex: none; padding: 0 12px calc(10px + var(--safe-b)); background: #fff; border-top: 1px solid var(--line); }
+
+.save-hint {
+  display: flex; align-items: center; gap: 8px;
+  margin: 8px 0 0; padding: 8px 10px;
+  background: var(--ok-soft); border-radius: 10px;
+  font-size: 12px; color: #0b6b36;
+}
+.save-hint .go { margin-left: auto; color: var(--ok); font-weight: 700; flex: none; }
+.save-hint.hidden { display: none; }
+
+.cartbar { display: flex; align-items: center; gap: 10px; padding: 10px 0 2px; }
+.cart-ico {
+  position: relative; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--brand); color: #fff; font-size: 19px;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.cart-ico.empty { background: #d8d8dc; }
+.cart-ico .dot {
+  position: absolute; top: -3px; right: -3px;
+  min-width: 18px; height: 18px; border-radius: 9px;
+  background: var(--gold); color: #4a3700;
+  font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; padding: 0 4px;
+}
+.cart-amt { flex: 1; min-width: 0; }
+.cart-amt .t { font-size: 17px; font-weight: 700; }
+.cart-amt .s { font-size: 11px; color: var(--ink-3); }
+.cta {
+  flex: none; padding: 10px 20px; border-radius: 999px;
+  background: var(--brand); color: #fff; font-size: 14px; font-weight: 600;
+}
+.cta:disabled { background: #d8d8dc; color: #fff; }
+
+/* ------------------------------ 抽屉 / 弹层 ------------------------------ */
+
+.sheet-mask {
+  position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 40;
+}
+.sheet-mask.on { opacity: 1; pointer-events: auto; }
+
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: #fff; border-radius: 18px 18px 0 0;
+  max-height: 88%; display: flex; flex-direction: column;
+  transform: translateY(102%); transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet.on { transform: translateY(0); }
+.sheet-hd {
+  flex: none; padding: 14px 16px 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 8px;
+}
+.sheet-hd h3 { margin: 0; font-size: 15px; font-weight: 700; flex: 1; }
+.sheet-hd .x { font-size: 20px; color: var(--ink-3); padding: 0 4px; }
+.sheet-bd { overflow-y: auto; padding: 12px 16px calc(16px + var(--safe-b)); -webkit-overflow-scrolling: touch; }
+.sheet-ft { flex: none; padding: 10px 16px calc(12px + var(--safe-b)); border-top: 1px solid var(--line); }
+
+/* ------------------------------ 卡片 ------------------------------ */
+
+.plan {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px; margin-bottom: 10px; background: #fff;
+}
+.plan.hl { border-color: var(--brand); background: var(--brand-soft); }
+.plan .ph { display: flex; align-items: baseline; gap: 8px; }
+.plan .pt { font-size: 14px; font-weight: 700; }
+.plan .ps { font-size: 11px; color: var(--ink-3); }
+.plan .pp { margin-left: auto; font-size: 17px; font-weight: 700; color: var(--brand); }
+.plan .pn { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.plan ul { margin: 8px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-2); }
+.plan ul li { margin-bottom: 2px; }
+.plan .acts { margin-top: 10px; display: flex; gap: 8px; }
+.plan .acts button {
+  padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--line);
+}
+.plan .acts .primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+.swap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 8px;
+}
+.swap .txt { flex: 1; min-width: 0; font-size: 12px; }
+.swap .txt b { font-size: 13px; }
+.swap .arrow { color: var(--ink-3); }
+.swap .sv { font-size: 13px; font-weight: 700; color: var(--ok); flex: none; }
+.swap button { font-size: 12px; color: var(--brand); font-weight: 700; flex: none; }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 5px; }
+.field input[type="text"], .field input[type="number"] {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--line);
+  border-radius: 9px; background: #fafafa;
+}
+.field .hint { font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button {
+  padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  border: 1px solid var(--line); background: #fff;
+}
+.chips button.on { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+.profile-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px; border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 8px;
+}
+.profile-row.on { border-color: var(--brand); background: var(--brand-soft); }
+.profile-row .av {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--bg);
+  display: flex; align-items: center; justify-content: center; font-size: 17px; flex: none;
+}
+.profile-row .nm { flex: 1; font-size: 13px; font-weight: 600; }
+.profile-row .ds { font-size: 11px; color: var(--ink-3); font-weight: 400; }
+
+.kpi { display: flex; gap: 8px; margin-bottom: 12px; }
+.kpi > div { flex: 1; background: var(--bg); border-radius: 10px; padding: 10px; }
+.kpi .k { font-size: 11px; color: var(--ink-3); }
+.kpi .v { font-size: 17px; font-weight: 700; margin-top: 2px; }
+
+.note { font-size: 12px; color: var(--ink-2); background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+.note b { color: var(--ink); }
+.warn { background: #fff8e6; color: #7a5200; }
+
+.empty { text-align: center; color: var(--ink-3); font-size: 13px; padding: 30px 16px; }
+.loading { text-align: center; color: var(--ink-3); font-size: 13px; padding: 30px 0; }
+
+.toast {
+  position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.82); color: #fff; font-size: 13px;
+  padding: 9px 16px; border-radius: 999px; z-index: 90;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 80%;
+}
+.toast.on { opacity: 1; }

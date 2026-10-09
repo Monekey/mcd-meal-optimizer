@@ -1,0 +1,18 @@
+{
+  "name": "mcd-meal-optimizer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "麦麦点餐官 · 基于麦当劳中国 MCP 的价格×热量双目标点餐优化器 + 麦金卡 ROI 精算",
+  "keywords": ["mcdonalds", "mcp", "meal-optimizer", "1024", "workbuddy"],
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node tests/run.mjs",
+    "build:demo": "node scripts/build-demo.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

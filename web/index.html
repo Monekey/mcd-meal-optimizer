@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#db0007" />
+<title>麦麦点餐官 · 更懂你的麦当劳点餐助手</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<div id="phone">
+
+  <header class="topbar">
+    <div class="mode-switch" id="modeSwitch">
+      <button data-mode="takein" class="on">到店取餐</button>
+      <button data-mode="delivery">麦乐送</button>
+    </div>
+    <div class="store-bar">
+      <span class="pin">📍</span>
+      <div class="nm" id="storeName">正在定位门店…</div>
+      <span class="chg" id="storeChange">切换</span>
+      <span class="badge-nonofficial">非官方</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="rail" id="rail"></nav>
+    <main class="list" id="list"><div class="loading">正在读取门店实时菜单…</div></main>
+  </div>
+
+  <footer class="bottom">
+    <div class="save-hint hidden" id="saveHint">
+      <span>💰</span><span id="saveHintText">还能再省一点</span>
+      <span class="go" id="saveHintGo">看看 →</span>
+    </div>
+    <div class="cartbar">
+      <div class="cart-ico empty" id="cartIco">🛒<span class="dot" id="cartDot" style="display:none">0</span></div>
+      <div class="cart-amt">
+        <div class="t" id="cartTotal">¥0.00</div>
+        <div class="s" id="cartSub">购物车是空的</div>
+      </div>
+      <button class="cta" id="ctaBtn" disabled>去结算</button>
+    </div>
+  </footer>
+
+  <div class="sheet-mask" id="mask"></div>
+
+  <section class="sheet" id="sheet">
+    <div class="sheet-hd">
+      <h3 id="sheetTitle">标题</h3>
+      <button class="x" id="sheetClose">✕</button>
+    </div>
+    <div class="sheet-bd" id="sheetBody"></div>
+    <div class="sheet-ft" id="sheetFoot" style="display:none"></div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

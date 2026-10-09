@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>麦麦点餐官 · 离线演示</title>
+<style>
+/*__CSS__*/
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="pitch">
+    <div class="kicker">麦当劳程序员创意开发大赛参赛作品 · 非官方</div>
+    <h1>你这一单，还能再省多少？</h1>
+    <p>
+      基于麦当劳中国官方 MCP 的<b>价格 × 热量双目标</b>点餐优化器。
+      下面是<b>真实门店数据快照</b>（北京建外SOHO A座，116 个餐品）与<b>同一套算法</b>的离线版本 ——
+      不需要 Token，直接就能玩。
+    </p>
+    <ul class="pts">
+      <li>左栏选品类 → 加购 → 底部实时告诉你<b>还能再省多少</b></li>
+      <li>「优化」里给出<b>每一处可替换项</b>和三条重排路线（最省 / 最平衡 / 更轻）</li>
+      <li>「麦金卡」标签页算出<b>盈亏平衡卡费</b> —— 低于这个数就值得买</li>
+    </ul>
+    <div class="hint">算法与线上版本同源（从 <code>core/</code> 内联），价格全部以「分」为单位整数运算，无浮点误差。</div>
+  </div>
+
+  <div class="phone" id="phone">
+    <div class="ph-top">
+      <div class="ph-title">到店取餐</div>
+      <div class="ph-store" id="storeName">—</div>
+    </div>
+    <div class="ph-body">
+      <nav class="rail" id="rail"></nav>
+      <main class="list" id="list"></main>
+    </div>
+    <div class="ph-bottom">
+      <div class="save hidden" id="saveHint">
+        <span>💰</span><span id="saveText">还能再省</span><span class="go">看看 →</span>
+      </div>
+      <div class="bar">
+        <div class="ico" id="cartIco">🛒<i id="cartDot" style="display:none">0</i></div>
+        <div class="amt">
+          <div class="t" id="total">¥0.00</div>
+          <div class="s" id="sub">还没选东西</div>
+        </div>
+        <button class="cta" id="optBtn" disabled>优化一下</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="modal" id="modal">
+  <div class="mhd"><h3 id="mtitle">标题</h3><button id="mclose">✕</button></div>
+  <div class="mbd" id="mbody"></div>
+</div>
+
+<script>
+/*__CORE__*/
+/*__DATA__*/
+/*__APP__*/
+</script>
+</body>
+</html>

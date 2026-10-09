@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>社交预览图</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1280px;height:640px;overflow:hidden;
+    background:#0d0d11;color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    display:flex;align-items:center;
+  }
+  .wrap{display:flex;width:100%;padding:0 64px;gap:56px;align-items:center}
+  .left{flex:1;min-width:0}
+  .kicker{
+    display:inline-block;font-size:17px;color:#ffb4b0;border:1px solid rgba(255,180,176,.4);
+    border-radius:999px;padding:5px 16px;margin-bottom:22px;letter-spacing:.02em;
+  }
+  h1{font-size:62px;line-height:1.16;font-weight:800;letter-spacing:-.02em;margin-bottom:20px}
+  h1 em{font-style:normal;color:#ffc72c}
+  .sub{font-size:22px;color:#a9a9b4;line-height:1.55;max-width:34ch}
+  .sub b{color:#fff}
+  .stats{display:flex;gap:26px;margin-top:34px}
+  .stat .n{font-size:34px;font-weight:800;color:#ffc72c;letter-spacing:-.01em}
+  .stat .l{font-size:14px;color:#8b8b96;margin-top:4px}
+  .right{flex:none;width:300px}
+  .phone{
+    width:300px;background:#f4f4f6;border-radius:26px;padding:14px 12px 12px;
+    box-shadow:0 26px 60px rgba(0,0,0,.6);color:#17171a;
+  }
+  .bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .chip{background:#db0007;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 12px}
+  .store{font-size:11px;color:#5b5b63;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card{background:#fff;border-radius:11px;padding:10px 11px;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+  .card .nm{font-size:12.5px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .p{font-size:13px;font-weight:800;color:#db0007}
+  .save{background:#e9f8ef;color:#0a6b3c;border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .save span{margin-left:auto;color:#0f9d58}
+  .foot{position:absolute;left:64px;bottom:34px;font-size:14px;color:#5f5f6a}
+  .foot b{color:#c9c9d2}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="left">
+      <div class="kicker">麦当劳程序员创意开发大赛 · 参赛作品</div>
+      <h1>你这一单，<br/>还能再省 <em>多少</em>？</h1>
+      <div class="sub">基于麦当劳中国<b>官方 MCP</b> 的<br/><b>价格 × 热量双目标</b>点餐优化器</div>
+      <div class="stats">
+        <div class="stat"><div class="n">2,352</div><div class="l">单次评估的组合数</div></div>
+        <div class="stat"><div class="n">49%</div><div class="l">麦金卡平均折扣</div></div>
+        <div class="stat"><div class="n">¥26.50</div><div class="l">盈亏平衡卡费</div></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="phone">
+        <div class="bar"><span class="chip">到店取餐</span><span class="store">北京建外SOHO(A座)</span></div>
+        <div class="card"><span class="nm">巨无霸</span><span class="p">¥25.50</span></div>
+        <div class="card"><span class="nm">中薯条</span><span class="p">¥13.50</span></div>
+        <div class="card"><span class="nm">中杯可乐</span><span class="p">¥9.50</span></div>
+        <div class="save">💰 同样内容还能再省<span>¥15.00 →</span></div>
+        <div class="card" style="margin-top:8px;background:#fff1f0"><span class="nm">巨无霸三件套</span><span class="p">¥33.50</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">真实门店数据 · 价格与热量全部由本地确定性算法计算 · <b>非麦当劳官方产品</b></div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# 本地个人数据，绝不入库
+data/profiles.json
+data/*.local.json
+
+# 依赖与产物
+node_modules/
+*.log
+.DS_Store
+
+# 环境变量：Token 只允许通过环境变量注入，永远不要写进仓库
+.env
+.env.local
+
+# 任何可能含真实凭证的文件
+mcp-config.json

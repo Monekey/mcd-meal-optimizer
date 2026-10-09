@@ -1,0 +1,1041 @@
+{
+ "9900005321": {
+  "kcal": 2056,
+  "protein": 97,
+  "fat": 87,
+  "carb": 212,
+  "sodium": 4024,
+  "calcium": 324,
+  "components": [
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 1,
+    "kcal": 485
+   },
+   {
+    "name": "板烧鸡腿堡",
+    "qty": 1,
+    "kcal": 391
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡-5块",
+    "qty": 1,
+    "kcal": 213
+   },
+   {
+    "name": "薄皮焦香V翅",
+    "qty": 2,
+    "kcal": 384
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 2,
+    "kcal": 294
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900016055": {
+  "kcal": 1211,
+  "protein": 46,
+  "fat": 47,
+  "carb": 144,
+  "sodium": 1617,
+  "calcium": 383,
+  "components": [
+   {
+    "name": "板烧鸡腿堡",
+    "qty": 1,
+    "kcal": 391
+   },
+   {
+    "name": "麦乐鸡-4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "苹果片一袋(60g)",
+    "qty": 1,
+    "kcal": 32
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   },
+   {
+    "name": "海绵宝宝×航海王系列玩具",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "海绵宝宝×航海王系列玩具"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900011056": {
+  "kcal": 2142,
+  "protein": 78,
+  "fat": 90,
+  "carb": 245,
+  "sodium": 3453,
+  "calcium": 323,
+  "components": [
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 1,
+    "kcal": 485
+   },
+   {
+    "name": "板烧鸡腿堡",
+    "qty": 1,
+    "kcal": 391
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "麦辣鸡翅2块",
+    "qty": 1,
+    "kcal": 224
+   },
+   {
+    "name": "中薯条",
+    "qty": 2,
+    "kcal": 578
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 2,
+    "kcal": 294
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900015902": {
+  "kcal": 1187,
+  "protein": 33,
+  "fat": 45,
+  "carb": 156,
+  "sodium": 1489,
+  "calcium": 367,
+  "components": [
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 1,
+    "kcal": 485
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "奥利奥麦旋风",
+    "qty": 1,
+    "kcal": 266
+   },
+   {
+    "name": "旋旋星愿贴",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "旋旋星愿贴"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900006957": {
+  "kcal": 1302,
+  "protein": 46,
+  "fat": 66,
+  "carb": 128,
+  "sodium": 1399,
+  "calcium": 185,
+  "components": [
+   {
+    "name": "芝士安格斯厚牛堡",
+    "qty": 1,
+    "kcal": 696
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900005466": {
+  "kcal": 949,
+  "protein": 31,
+  "fat": 38,
+  "carb": 116,
+  "sodium": 1126,
+  "calcium": 199,
+  "components": [
+   {
+    "name": "巨无霸",
+    "qty": 1,
+    "kcal": 513
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900005451": {
+  "kcal": 436,
+  "protein": 4,
+  "fat": 12,
+  "carb": 74,
+  "sodium": 165,
+  "calcium": 28,
+  "components": [
+   {
+    "name": "麦辣鸡翅4块",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "麦辣鸡翅4块"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900011121": {
+  "kcal": 412,
+  "protein": 18,
+  "fat": 14,
+  "carb": 49,
+  "sodium": 557,
+  "calcium": 128,
+  "components": [
+   {
+    "name": "麦香鱼",
+    "qty": 1,
+    "kcal": 325
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "苹果片一袋(60g)",
+    "qty": 1,
+    "kcal": 32
+   },
+   {
+    "name": "锡兰红茶",
+    "qty": 1,
+    "kcal": 2
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900004064": {
+  "kcal": 827,
+  "protein": 27,
+  "fat": 29,
+  "carb": 109,
+  "sodium": 1206,
+  "calcium": 121,
+  "components": [
+   {
+    "name": "板烧鸡腿堡",
+    "qty": 1,
+    "kcal": 391
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900005460": {
+  "kcal": 761,
+  "protein": 20,
+  "fat": 25,
+  "carb": 109,
+  "sodium": 721,
+  "calcium": 127,
+  "components": [
+   {
+    "name": "麦香鱼",
+    "qty": 1,
+    "kcal": 325
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900010110": {
+  "kcal": 1119,
+  "protein": 41,
+  "fat": 48,
+  "carb": 127,
+  "sodium": 1463,
+  "calcium": 206,
+  "components": [
+   {
+    "name": "巨无霸",
+    "qty": 1,
+    "kcal": 513
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900016310": {
+  "kcal": 606,
+  "protein": 14,
+  "fat": 22,
+  "carb": 85,
+  "sodium": 502,
+  "calcium": 35,
+  "components": [
+   {
+    "name": "龙焰芝士棒鸡腿堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "龙焰芝士棒鸡腿堡"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016075": {
+  "kcal": 436,
+  "protein": 4,
+  "fat": 12,
+  "carb": 74,
+  "sodium": 165,
+  "calcium": 28,
+  "components": [
+   {
+    "name": "龙焰芝士棒鸡腿堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "龙焰芝士棒鸡腿堡"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016309": {
+  "kcal": 606,
+  "protein": 14,
+  "fat": 22,
+  "carb": 85,
+  "sodium": 502,
+  "calcium": 35,
+  "components": [
+   {
+    "name": "龙焰鸡腿堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "龙焰鸡腿堡"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016311": {
+  "kcal": 606,
+  "protein": 14,
+  "fat": 22,
+  "carb": 85,
+  "sodium": 502,
+  "calcium": 35,
+  "components": [
+   {
+    "name": "龙焰鸡腿堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "龙焰鸡腿堡"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900004236": {
+  "kcal": 1091,
+  "protein": 38,
+  "fat": 46,
+  "carb": 127,
+  "sodium": 1710,
+  "calcium": 189,
+  "components": [
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 1,
+    "kcal": 485
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900005453": {
+  "kcal": 805,
+  "protein": 19,
+  "fat": 29,
+  "carb": 113,
+  "sodium": 896,
+  "calcium": 101,
+  "components": [
+   {
+    "name": "麦香鸡",
+    "qty": 1,
+    "kcal": 369
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900011128": {
+  "kcal": 450,
+  "protein": 23,
+  "fat": 18,
+  "carb": 48,
+  "sodium": 864,
+  "calcium": 86,
+  "components": [
+   {
+    "name": "汉堡包",
+    "qty": 1,
+    "kcal": 248
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "苹果片一袋(60g)",
+    "qty": 1,
+    "kcal": 32
+   },
+   {
+    "name": "无糖可口可乐中杯",
+    "qty": 1,
+    "kcal": 0
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900003537": {
+  "kcal": 578,
+  "protein": 8,
+  "fat": 24,
+  "carb": 76,
+  "sodium": 330,
+  "calcium": 36,
+  "components": [
+   {
+    "name": "中薯条",
+    "qty": 2,
+    "kcal": 578
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900016073": {
+  "kcal": 436,
+  "protein": 4,
+  "fat": 12,
+  "carb": 74,
+  "sodium": 165,
+  "calcium": 28,
+  "components": [
+   {
+    "name": "龙焰鸡腿堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "龙焰鸡腿堡"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900004835": {
+  "kcal": 649,
+  "protein": 16,
+  "fat": 24,
+  "carb": 87,
+  "sodium": 587,
+  "calcium": 37,
+  "components": [
+   {
+    "name": "麦乐鸡5块",
+    "qty": 1,
+    "kcal": 213
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900016056": {
+  "kcal": 384,
+  "protein": 19,
+  "fat": 18,
+  "carb": 35,
+  "sodium": 411,
+  "calcium": 262,
+  "components": [
+   {
+    "name": "麦乐鸡-4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "苹果片一袋(60g)",
+    "qty": 1,
+    "kcal": 32
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "海绵宝宝×航海王系列玩具",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "海绵宝宝×航海王系列玩具"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900005421": {
+  "kcal": 557,
+  "protein": 26,
+  "fat": 18,
+  "carb": 67,
+  "sodium": 577,
+  "calcium": 301,
+  "components": [
+   {
+    "name": "鱼排堡",
+    "qty": 1,
+    "kcal": 269
+   },
+   {
+    "name": "迷你薯条",
+    "qty": 1,
+    "kcal": 106
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "随机玩具1个",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "随机玩具1个"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900011123": {
+  "kcal": 394,
+  "protein": 23,
+  "fat": 25,
+  "carb": 21,
+  "sodium": 909,
+  "calcium": 20,
+  "components": [
+   {
+    "name": "麦辣鸡翅2块",
+    "qty": 1,
+    "kcal": 224
+   },
+   {
+    "name": "麦乐鸡4块",
+    "qty": 1,
+    "kcal": 170
+   },
+   {
+    "name": "无糖可口可乐中杯",
+    "qty": 1,
+    "kcal": 0
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900016058": {
+  "kcal": 557,
+  "protein": 26,
+  "fat": 18,
+  "carb": 67,
+  "sodium": 577,
+  "calcium": 301,
+  "components": [
+   {
+    "name": "鱼排堡",
+    "qty": 1,
+    "kcal": 269
+   },
+   {
+    "name": "迷你薯条",
+    "qty": 1,
+    "kcal": 106
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "海绵宝宝×航海王系列玩具",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "海绵宝宝×航海王系列玩具"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900005422": {
+  "kcal": 536,
+  "protein": 24,
+  "fat": 20,
+  "carb": 60,
+  "sodium": 627,
+  "calcium": 304,
+  "components": [
+   {
+    "name": "汉堡包",
+    "qty": 1,
+    "kcal": 248
+   },
+   {
+    "name": "迷你薯条",
+    "qty": 1,
+    "kcal": 106
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "随机玩具1个",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "随机玩具1个"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016057": {
+  "kcal": 536,
+  "protein": 24,
+  "fat": 20,
+  "carb": 60,
+  "sodium": 627,
+  "calcium": 304,
+  "components": [
+   {
+    "name": "汉堡包",
+    "qty": 1,
+    "kcal": 248
+   },
+   {
+    "name": "迷你薯条",
+    "qty": 1,
+    "kcal": 106
+   },
+   {
+    "name": "小杯玉米杯",
+    "qty": 1,
+    "kcal": 53
+   },
+   {
+    "name": "纯牛奶",
+    "qty": 1,
+    "kcal": 129
+   },
+   {
+    "name": "海绵宝宝×航海王系列玩具",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "海绵宝宝×航海王系列玩具"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900015602": {
+  "kcal": 436,
+  "protein": 4,
+  "fat": 12,
+  "carb": 74,
+  "sodium": 165,
+  "calcium": 28,
+  "components": [
+   {
+    "name": "Hold不住鸡排堡（椒盐风味）",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "中薯条",
+    "qty": 1,
+    "kcal": 289
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [
+   "Hold不住鸡排堡（椒盐风味）"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900011126": {
+  "kcal": 434,
+  "protein": 23,
+  "fat": 24,
+  "carb": 31,
+  "sodium": 1001,
+  "calcium": 30,
+  "components": [
+   {
+    "name": "麦麦脆汁鸡-琵琶腿",
+    "qty": 1,
+    "kcal": 328
+   },
+   {
+    "name": "迷你薯条",
+    "qty": 1,
+    "kcal": 106
+   },
+   {
+    "name": "无糖可口可乐中杯",
+    "qty": 1,
+    "kcal": 0
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900003538": {
+  "kcal": 147,
+  "protein": 0,
+  "fat": 0,
+  "carb": 36,
+  "sodium": 0,
+  "calcium": 10,
+  "components": [
+   {
+    "name": "可乐中杯",
+    "qty": 1,
+    "kcal": 147
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900004066": {
+  "kcal": 1936,
+  "protein": 87,
+  "fat": 93,
+  "carb": 183,
+  "sodium": 4027,
+  "calcium": 367,
+  "components": [
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 2,
+    "kcal": 970
+   },
+   {
+    "name": "麦辣鸡翅2块",
+    "qty": 3,
+    "kcal": 672
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 2,
+    "kcal": 294
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900008747": {
+  "kcal": 248,
+  "protein": 13,
+  "fat": 8,
+  "carb": 29,
+  "sodium": 492,
+  "calcium": 61,
+  "components": [
+   {
+    "name": "汉堡包",
+    "qty": 1,
+    "kcal": 248
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900015568": {
+  "kcal": 502,
+  "protein": 24,
+  "fat": 21,
+  "carb": 53,
+  "sodium": 1013,
+  "calcium": 13,
+  "components": [
+   {
+    "name": "那么大鸡排（椒盐风味）",
+    "qty": 1,
+    "kcal": 385
+   },
+   {
+    "name": "阳光柠檬红茶中杯",
+    "qty": 1,
+    "kcal": 117
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ }
+}
