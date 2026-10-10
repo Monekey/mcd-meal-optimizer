@@ -18,14 +18,15 @@
 
 | Tool | 用途 | 关键参数 |
 |---|---|---|
-| `query-nearby-stores` | 到店取餐场景查门店，拿 `storeCode` / `beCode` | `beType=1`、`searchType=2`、`city`、`keyword` |
-| `delivery-query-stores` | 麦乐送场景查可配送门店 | `orderType=2`、`beType=2` |
+| `query-nearby-stores` | 到店取餐场景查门店，拿 `storeCode`（来得速才会给 `beCode`） | `beType=1`、`searchType=2`、`city`、`keyword` |
+| `delivery-query-addresses` | **麦乐送第一步**：拿用户的收货地址列表 `addressId` | 无（⚠️ 工具名是**复数**） |
+| `delivery-query-stores` | 麦乐送第二步：用 `addressId` 查可配送门店，拿 `storeCode` + **`beCode`** | `beType=2`、**`addressId`（必填）** |
 
 ### 2. 菜单与营养
 
 | Tool | 用途 | 关键参数 |
 |---|---|---|
-| `query-meals` | 拉取门店实时菜单（分类 + 122 个在售 SKU + 价格 + 麦金卡标记） | `storeCode`、`orderType`、`beType` |
+| `query-meals` | 拉取门店实时菜单（分类 + 122 个在售 SKU + 价格 + 麦金卡标记） | `storeCode`、`orderType`、`beType`；**外送还要带 `beCode`** |
 | `query-meal-detail` | 解析套餐默认组成，用于补全套餐营养 | `storeCode`、`code` |
 | `list-nutrition-foods` | 160 个餐品的能量/蛋白/脂肪/碳水/钠/钙 | 无 |
 
@@ -43,8 +44,8 @@
 
 | Tool | 用途 | 关键参数 |
 |---|---|---|
-| `calculate-price` | **权威核价**，返回商品价/优惠/应付/取餐方式 | `storeCode`、`orderType`、`beType`、`items[{productCode,quantity}]` |
-| `create-order` | 创建订单，返回支付链接 | 额外必传 `takeWayCode`（来自 calculate-price 的 `takeWayList[].code`） |
+| `calculate-price` | **权威核价**，返回商品价/优惠/应付/取餐方式 | `storeCode`、`orderType`、`beType`、`items[{productCode,quantity}]`；**外送还要带 `beCode`** |
+| `create-order` | 创建订单（未支付，需去官方 App 付款） | **到店**：必传 `takeWayCode`（值只能来自 `takeWayList[].code`，如 `eat-in` / 外带）；**外送**：必传 `addressId` + `beCode`，**不传** `takeWayCode` |
 
 ### 5. 发现但未使用
 
@@ -72,6 +73,38 @@
 ```
 
 **调用量控制**：一次完整会话约 **6—14 次** MCP 调用（套餐营养补全的结果会落盘缓存，第二次起为 0 次）。相比"对每个候选组合都调一次核价"的做法（数千次），本方案对 600 次/分钟的限流非常友好。
+
+### 麦乐送流程（比到店多两步，且参数不同）
+
+```text
+① delivery-query-addresses()
+      ↓ 拿到 addressId（工具名是复数！）
+② delivery-query-stores(beType=2, addressId)
+      ↓ 拿到可配送门店的 storeCode + beCode
+③ query-meals(storeCode, orderType=2, beType=2, beCode)   ← 必须带 beCode
+      ↓ 外送菜单与到店是**两套**：同一门店「巨无霸」到店 ¥25.5 / 外送 ¥28.5
+④ 本地求解器（同上）
+⑤ calculate-price(..., beCode)
+      ↓ 外送核价含配送费（实测商品价 ¥15.50 → 应付 ¥21.50），且 takeWayList 为空
+⑥ create-order(..., beCode, addressId)   ← 外送**不传** takeWayCode
+```
+
+> ⚠️ 三个最容易错的点：
+> ① `delivery-query-stores` 的必填参数是 `beType` + **`addressId`**，不是 city/keyword；
+> ② 工具名是 `delivery-query-addresses`（**复数**），文档提到的单数形式会返回 `unknown tool`；
+> ③ 外送的 `beCode` 是核价与下单的必传参数，缺了会拿不到正确价格。
+
+### 下单的安全边界
+
+`create-order` 是**唯一的写操作**，因此在三个层面都做了拦截：
+
+| 层 | 拦截 |
+|---|---|
+| CLI / Skill | `order` 不带 `--confirm` 时**只预演**，打印清单与金额，不创建订单 |
+| 服务端 | `/api/order` 必须带 `confirm:true`；到店缺 `takeWayCode` → 400；外送缺 `addressId` → 400 |
+| 前端 | 二次 `confirm()` 弹窗，且明确告知「会在你的账户创建真实订单，但不会替你付款」 |
+
+**本项目不代收款项、不代付。** 订单创建后是「未支付」状态，付款始终在麦当劳官方 App / 小程序完成。
 
 ### 麦金卡 ROI 流程
 

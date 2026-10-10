@@ -1524,5 +1524,39 @@
    "枫糖风味厚松饼猪柳堡"
   ],
   "source": "query-meal-detail"
+ },
+ "9900015168": {
+  "kcal": 1357,
+  "protein": 32,
+  "fat": 48,
+  "carb": 190,
+  "sodium": 1538,
+  "calcium": 210,
+  "components": [
+   {
+    "name": "枫糖风味厚松饼猪柳蛋堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "麦辣鸡腿汉堡",
+    "qty": 1,
+    "kcal": 485
+   },
+   {
+    "name": "中薯条",
+    "qty": 2,
+    "kcal": 578
+   },
+   {
+    "name": "可乐中杯",
+    "qty": 2,
+    "kcal": 294
+   }
+  ],
+  "unknownComponents": [
+   "枫糖风味厚松饼猪柳蛋堡"
+  ],
+  "source": "query-meal-detail"
  }
 }

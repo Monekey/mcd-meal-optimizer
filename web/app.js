@@ -12,6 +12,9 @@ const yuan = (fen) => (fen == null ? '—' : '¥' + (fen / 100).toFixed(2));
 const state = {
   mode: 'takein',
   store: null,
+  beCode: null,      // 外送/得来速必传，来自门店查询结果
+  addressId: null,   // 麦乐送的收货地址 ID
+  address: null,     // 地址展示用
   menu: null,
   cart: [],          // [{code, qty}]
   activeCat: null,
@@ -191,13 +194,80 @@ function showProfileEditor(profile) {
 
 /* --------------------------------- 门店 --------------------------------- */
 
+/**
+ * 麦乐送必须先从收货地址出发 —— 地址决定了能配送哪些门店，
+ * 门店返回的 beCode 又是后续核价/下单的必传参数。
+ */
+async function ensureDeliveryAddress() {
+  if (state.addressId) return true;
+  $('list').innerHTML = '<div class="loading">正在读取你的收货地址…</div>';
+  try {
+    const r = await api('/api/addresses');
+    const list = r.addresses || [];
+    if (!list.length) {
+      $('list').innerHTML =
+        '<div class="empty">没有查到收货地址。<br><span style="font-size:11px">请先在麦当劳官方 App 里添加一个收货地址，再回到这里。</span></div>';
+      return false;
+    }
+    if (list.length === 1) {
+      state.addressId = list[0].addressId;
+      state.address = list[0];
+      return true;
+    }
+    return await new Promise((resolve) => {
+      openSheet(
+        '选择收货地址',
+        list
+          .map(
+            (a, i) => `<div class="profile-row" data-idx="${i}">
+              <div class="av">📍</div>
+              <div class="nm">${esc(a.contactName || '收货人')} ${esc(a.phone || '')}
+                <div class="ds">${esc(a.fullAddress || '')}</div>
+              </div>
+            </div>`
+          )
+          .join('')
+      );
+      $('sheetBody')
+        .querySelectorAll('[data-idx]')
+        .forEach((el) => {
+          el.onclick = () => {
+            const a = list[+el.dataset.idx];
+            state.addressId = a.addressId;
+            state.address = a;
+            closeSheet();
+            resolve(true);
+          };
+        });
+    });
+  } catch (e) {
+    $('list').innerHTML = `<div class="empty">地址读取失败：${esc(e.message)}</div>`;
+    return false;
+  }
+}
+
 async function loadStores() {
   $('list').innerHTML = '<div class="loading">正在定位门店…</div>';
+
+  if (state.mode === 'delivery' && !(await ensureDeliveryAddress())) return;
+
   try {
-    const r = await api(`/api/stores?mode=${state.mode}&city=${encodeURIComponent('北京')}`);
+    const qs =
+      state.mode === 'delivery'
+        ? `/api/stores?mode=delivery&addressId=${encodeURIComponent(state.addressId)}`
+        : `/api/stores?mode=takein&city=${encodeURIComponent('北京')}`;
+    const r = await api(qs);
+
+    if (r.needsAddress) {
+      $('list').innerHTML = '<div class="empty">请先选择收货地址</div>';
+      return;
+    }
     const stores = r.stores || [];
     if (!stores.length) {
-      $('list').innerHTML = '<div class="empty">附近没有查到门店，点右上角「切换」换个城市试试</div>';
+      $('list').innerHTML =
+        state.mode === 'delivery'
+          ? '<div class="empty">这个地址暂时没有可配送的门店</div>'
+          : '<div class="empty">附近没有查到门店，点右上角「切换」换个城市试试</div>';
       return;
     }
     state.stores = stores;
@@ -209,25 +279,46 @@ async function loadStores() {
 
 async function selectStore(s) {
   state.store = s;
+  state.beCode = s.beCode || null;
   $('storeName').innerHTML = `${esc(s.storeName || '未命名门店')} <span class="sub">${s.distance != null ? Math.round(s.distance) + 'm' : ''}</span>`;
   await loadMenu();
 }
 
 async function showStorePicker() {
   const list = state.stores || [];
+  const head =
+    state.mode === 'delivery'
+      ? `<div class="profile-row" id="changeAddr">
+          <div class="av">📍</div>
+          <div class="nm">送到：${esc((state.address?.fullAddress || '未选择').slice(0, 26))}…
+            <div class="ds">点击更换收货地址</div>
+          </div>
+        </div>`
+      : '';
   openSheet(
-    '选择门店',
-    list
-      .map(
-        (s) => `<div class="profile-row ${s.storeCode === state.store?.storeCode ? 'on' : ''}" data-code="${s.storeCode}">
+    state.mode === 'delivery' ? '配送门店' : '选择门店',
+    head +
+      (list
+        .map(
+          (s) => `<div class="profile-row ${s.storeCode === state.store?.storeCode ? 'on' : ''}" data-code="${s.storeCode}">
           <div class="av">🏪</div>
           <div class="nm">${esc(s.storeName)}
             <div class="ds">${esc(s.address || '')} · ${s.distance != null ? Math.round(s.distance) + 'm' : ''} · ${s.businessStartTime || ''}-${s.businessEndTime || ''}</div>
           </div>
         </div>`
-      )
-      .join('') || '<div class="empty">暂无可选门店</div>'
+        )
+        .join('') ||
+        '<div class="empty">暂无可选门店</div>')
   );
+  const chg = $('sheetBody').querySelector('#changeAddr');
+  if (chg) {
+    chg.onclick = () => {
+      state.addressId = null;
+      state.address = null;
+      closeSheet();
+      loadStores();
+    };
+  }
   $('sheetBody').querySelectorAll('[data-code]').forEach((el) => {
     el.onclick = () => {
       const s = list.find((x) => String(x.storeCode) === el.dataset.code);
@@ -244,7 +335,7 @@ async function loadMenu() {
   $('list').innerHTML = '<div class="loading">正在读取门店实时菜单与营养数据…<br><span style="font-size:11px">首次加载需补全套餐营养，约 5–10 秒</span></div>';
   $('rail').innerHTML = '';
   try {
-    const m = await api(`/api/menu?storeCode=${state.store.storeCode}&mode=${state.mode}`);
+    const m = await api(`/api/menu?storeCode=${state.store.storeCode}&mode=${state.mode}&beCode=${encodeURIComponent(state.beCode || '')}`);
     if (m.error) throw new Error(m.error);
     state.menu = m;
     state.activeCat = m.categories[0]?.name || null;
@@ -382,7 +473,7 @@ function scheduleAdvice() {
 async function refreshAdvice() {
   if (!state.cart.length || !state.menu) return;
   try {
-    const r = await post('/api/advise', { storeCode: state.store.storeCode, mode: state.mode, cart: state.cart });
+    const r = await post('/api/advise', { storeCode: state.store.storeCode, mode: state.mode, beCode: state.beCode || null, cart: state.cart });
     state.advice = r;
     const hint = $('saveHint');
     if (r.totalSaveFen > 0) {
@@ -451,7 +542,7 @@ async function showOptimizer() {
   let adv = state.advice;
   let planRes = null;
   try {
-    adv = await post('/api/advise', { storeCode: state.store.storeCode, mode: state.mode, cart: state.cart });
+    adv = await post('/api/advise', { storeCode: state.store.storeCode, mode: state.mode, beCode: state.beCode || null, cart: state.cart });
     state.advice = adv;
     const wants = state.cart.map((c) => {
       const item = state.menu.items.find((i) => i.code === c.code);
@@ -461,7 +552,7 @@ async function showOptimizer() {
       const usable = cat && cat.count > 1;
       return { label: cat?.name || item?.name, category: usable ? cat.name : null, code: usable ? null : c.code, qty: c.qty };
     });
-    planRes = await post('/api/solve', { storeCode: state.store.storeCode, mode: state.mode, wants });
+    planRes = await post('/api/solve', { storeCode: state.store.storeCode, mode: state.mode, beCode: state.beCode || null, wants });
   } catch (e) {
     $('sheetBody').innerHTML = `<div class="empty">优化失败：${esc(e.message)}</div>`;
     return;
@@ -558,7 +649,7 @@ async function showCardRoi() {
     const cartQs = encodeURIComponent(JSON.stringify(state.cart));
     const fee = prof?.cardFeeFen ?? '';
     const visits = prof?.visitsPerMonth ?? 8;
-    const r = await api(`/api/card-roi?storeCode=${state.store.storeCode}&mode=${state.mode}&cart=${cartQs}&feeFen=${fee}&visits=${visits}`);
+    const r = await api(`/api/card-roi?storeCode=${state.store.storeCode}&mode=${state.mode}&beCode=${encodeURIComponent(state.beCode || '')}&cart=${cartQs}&feeFen=${fee}&visits=${visits}`);
     const html = `
       <div class="kpi">
         <div><div class="k">卡价商品</div><div class="v">${r.eligibleCount}<span style="font-size:11px;font-weight:400"> 项</span></div></div>
@@ -589,7 +680,7 @@ async function showCardRoi() {
     const recompute = async () => {
       const f = $('feeInput').value;
       const v = $('visitsInput').value;
-      const rr = await api(`/api/card-roi?storeCode=${state.store.storeCode}&mode=${state.mode}&cart=${cartQs}&feeFen=${f}&visits=${v}`);
+      const rr = await api(`/api/card-roi?storeCode=${state.store.storeCode}&mode=${state.mode}&beCode=${encodeURIComponent(state.beCode || '')}&cart=${cartQs}&feeFen=${f}&visits=${v}`);
       $('roiResult').innerHTML = `<div class="note">${rr.verdict.replace(/\n\n/g, '<br><br>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')}</div>`;
     };
     $('feeInput').onchange = recompute;
@@ -613,6 +704,7 @@ async function showCheckout() {
     priced = await post('/api/price', {
       storeCode: state.store.storeCode,
       mode: state.mode,
+      beCode: state.beCode || null,
       items: lines.map(({ item, qty }) => ({ code: item.code, qty })),
     });
   } catch { /* 核价失败仍展示本地价 */ }
@@ -631,11 +723,19 @@ async function showCheckout() {
       .join('')}</div></div>` : ''}
 
     <div class="note">取餐人档案：<b>${esc(prof?.name || '默认')}</b>（可在底部「档案」里切换不同预算/热量目标）</div>
-    <div class="note warn" style="margin-top:8px">按下单后订单会真实创建并返回支付链接。本项目<b>不代替你付款</b>，付款始终在麦当劳官方页面完成。</div>
+    ${
+      state.mode === 'delivery'
+        ? `<div class="note">配送方式：<b>麦乐送</b> → ${esc((state.address?.fullAddress || '未选择地址').slice(0, 40))}</div>`
+        : ''
+    }
+    <div class="note warn" style="margin-top:8px">按下单后订单会真实创建。本项目<b>不代替你付款</b>，付款始终在麦当劳官方页面完成。</div>
   `;
   openSheet('结算', html, `<button class="cta" id="doOrder" style="width:100%">确认下单</button>`);
 
-  let takeWayCode = official?.takeWayList?.[0]?.code || 'take-in-store';
+  // 到店才需要取餐方式，且取值范围只认核价返回的 takeWayList。
+  // 早期版本用 'take-in-store' 兜底 —— 那是个不存在的值。
+  const isDelivery = state.mode === 'delivery';
+  let takeWayCode = isDelivery ? null : official?.takeWayList?.[0]?.code || null;
   const tw = $('takeway');
   if (tw)
     tw.onclick = (e) => {
@@ -646,13 +746,22 @@ async function showCheckout() {
     };
 
   $('doOrder').onclick = async () => {
+    if (!isDelivery && !takeWayCode) {
+      toast('请先选择取餐方式');
+      return;
+    }
+    if (isDelivery && !state.addressId) {
+      toast('外送缺少收货地址，请重新选择');
+      return;
+    }
     if (!confirm('确认下单？这会在你的麦当劳账户创建真实订单，但不会替你付款。')) return;
     $('doOrder').textContent = '创建中…';
     const r = await post('/api/order', {
       confirm: true,
       storeCode: state.store.storeCode,
       mode: state.mode,
-      takeWayCode,
+      beCode: state.beCode || null,
+      ...(isDelivery ? { addressId: state.addressId } : { takeWayCode }),
       items: lines.map(({ item, qty }) => ({ code: item.code, qty })),
     });
     if (r.ok) {
@@ -689,6 +798,15 @@ document.addEventListener('keydown', (e) => {
 
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* 支持用 URL 参数直接进入某个渠道：/?mode=delivery —— 方便分享，也方便自动化验证 */
+(function applyInitialMode() {
+  const m = new URLSearchParams(location.search).get('mode');
+  if (m !== 'delivery' && m !== 'takein') return;
+  state.mode = m;
+  const sw = $('modeSwitch');
+  if (sw) [...sw.children].forEach((x) => x.classList.toggle('on', x.dataset.mode === m));
+})();
 
 window.__state = state;
 boot();

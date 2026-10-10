@@ -176,13 +176,55 @@ function resolveWants(list, menu) {
     .filter(Boolean);
 }
 
+/**
+ * 麦乐送：外送必须先有「收货地址」才能查到可配送门店，
+ * 而门店返回的 beCode 是外送下单/核价的必传参数（到店场景不需要）。
+ */
+async function resolveDeliveryStores(addressId, storeCode = null) {
+  if (!addressId) {
+    throw new Error('麦乐送需要 --address <地址ID>；可以先跑 `node cli.mjs addresses` 看有哪些地址');
+  }
+  const d = P.extractData(await call('delivery-query-stores', { beType: 2, addressId })) || {};
+  const stores = d.stores || (Array.isArray(d) ? d : []);
+  if (!stores.length) throw new Error('这个地址没有可配送的门店');
+
+  if (!storeCode) return { stores, store: stores[0] };
+  const hit = stores.find((s) => String(s.storeCode) === String(storeCode));
+  if (!hit) {
+    throw new Error(
+      `该地址不配送门店 ${storeCode}。可配送的有：` +
+        stores.map((s) => `${s.storeName}(${s.storeCode})`).join('、')
+    );
+  }
+  return { stores, store: hit };
+}
+
 let _menuCache = null;
-async function loadMenu(storeCode, mode, { enrich = true, budget = 14 } = {}) {
-  const cacheKey = `${storeCode}:${mode}`;
+
+/**
+ * 载入菜单。返回的 menu 上挂了 `__store`，供 price/order 复用同一套
+ * storeCode / beCode / orderType / beType —— 避免调用方各拼一套拼错。
+ */
+async function loadMenu(storeCode, mode, { enrich = true, budget = 14, addressId = null, beCode = null } = {}) {
+  const { orderType, beType } = modeOf(mode);
+
+  let sc = storeCode;
+  let bc = beCode;
+  if (mode === 'delivery') {
+    if (!bc) {
+      const { store } = await resolveDeliveryStores(addressId, storeCode);
+      sc = store.storeCode;
+      bc = store.beCode;
+    }
+    if (!bc) throw new Error('这家门店没有返回 beCode，外送无法核价/下单');
+  }
+
+  const cacheKey = `${mode}:${sc}:${bc || ''}`;
   if (_menuCache?.key === cacheKey) return _menuCache.menu;
 
-  const { orderType, beType } = modeOf(mode);
-  const menuRaw = P.extractData(await call('query-meals', { storeCode, orderType, beType }));
+  const args = { storeCode: sc, orderType, beType };
+  if (bc) args.beCode = bc; // 外送/得来速/团餐必传
+  const menuRaw = P.extractData(await call('query-meals', args));
   const menu = M.normalizeMenu(menuRaw);
 
   let nutritionRows = [];
@@ -202,7 +244,7 @@ async function loadMenu(storeCode, mode, { enrich = true, budget = 14 } = {}) {
       cacheFile: CACHE_FILE,
       budget,
       // 必须显式传门店与渠道 —— 否则套餐营养会静默地一个都补不上
-      storeCode,
+      storeCode: sc,
       orderType,
       beType,
     });
@@ -210,6 +252,9 @@ async function loadMenu(storeCode, mode, { enrich = true, budget = 14 } = {}) {
   }
 
   menu.stats = {
+    mode,
+    storeCode: sc,
+    beCode: bc || null,
     sku: menu.items.length,
     categories: menu.categories.length,
     withNutrition: menu.items.filter((i) => i.nutrition?.kcal != null).length,
@@ -217,6 +262,9 @@ async function loadMenu(storeCode, mode, { enrich = true, budget = 14 } = {}) {
     enriched,
     mcpCalls: client.stats.requests,
   };
+  // 供 price / order 复用，避免各命令各拼一套参数
+  menu.__store = { storeCode: sc, beCode: bc, orderType, beType, mode };
+
   _menuCache = { key: cacheKey, menu };
   return menu;
 }
@@ -234,8 +282,45 @@ const COMMANDS = {
     };
   },
 
+  /** 麦乐送用的收货地址（外卖下单的必要前置） */
+  async addresses() {
+    const d = P.extractData(await call('delivery-query-addresses', {})) || {};
+    const list = d.addresses || (Array.isArray(d) ? d : []);
+    return {
+      ok: true,
+      count: list.length,
+      addresses: list.map((a) => ({
+        addressId: a.addressId,
+        contactName: a.contactName,
+        phone: a.phone,
+        fullAddress: a.fullAddress,
+        isDefault: !!a.isDefault,
+      })),
+      note: '麦乐送必须用 addressId 查可配送门店；核价与下单也要用同一个 addressId。',
+    };
+  },
+
   async stores(a) {
-    const m = modeOf(a.mode);
+    const mode = a.mode || 'takein';
+
+    if (mode === 'delivery') {
+      const { stores } = await resolveDeliveryStores(a.address, a.store);
+      return {
+        ok: true,
+        mode,
+        count: stores.length,
+        stores: stores.map((s) => ({
+          storeCode: s.storeCode,
+          beCode: s.beCode,
+          name: s.storeName,
+          address: s.address,
+          distance: s.distance,
+        })),
+        note: '外送必须带 beCode 才能核价/下单；用 --store 可指定其中一家。',
+      };
+    }
+
+    const m = modeOf(mode);
     const text = await call('query-nearby-stores', {
       beType: m.beType,
       searchType: 2,
@@ -245,10 +330,11 @@ const COMMANDS = {
     const stores = P.extractData(text) || [];
     return {
       ok: true,
+      mode,
       count: stores.length,
       stores: stores.slice(0, 20).map((s) => ({
         storeCode: s.storeCode,
-        beCode: s.beCode,
+        beCode: s.beCode || null,
         name: s.storeName,
         address: s.address,
         distance: s.distance,
@@ -257,8 +343,10 @@ const COMMANDS = {
   },
 
   async menu(a) {
-    if (!a.store) throw new Error('缺少 --store');
-    const menu = await loadMenu(a.store, a.mode, { enrich: a.enrich !== 'false' && a['no-enrich'] !== true });
+    const menu = await loadMenu(a.store, a.mode, {
+      enrich: a['no-enrich'] !== true,
+      addressId: a.address || null,
+    });
     return {
       ok: true,
       stats: menu.stats,
@@ -268,9 +356,8 @@ const COMMANDS = {
   },
 
   async solve(a) {
-    if (!a.store) throw new Error('缺少 --store');
     if (!a.wants) throw new Error('缺少 --wants（例如 --wants "汉堡,饮料,小食"）');
-    const menu = await loadMenu(a.store, a.mode);
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
     const wants = resolveWants(String(a.wants).split(','), menu);
 
     const constraints = {};
@@ -306,9 +393,8 @@ const COMMANDS = {
   },
 
   async advise(a) {
-    if (!a.store) throw new Error('缺少 --store');
     if (!a.cart) throw new Error('缺少 --cart（例如 --cart "1100:1,4810:1"）');
-    const menu = await loadMenu(a.store, a.mode);
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
     const cart = cartOf(a.cart);
     const bad = cart.filter((c) => !menu.byCode.has(c.code));
     if (bad.length) throw new Error(`购物车里有不存在的商品 code：${bad.map((b) => b.code).join(', ')}`);
@@ -338,8 +424,7 @@ const COMMANDS = {
   },
 
   async 'card-roi'(a) {
-    if (!a.store) throw new Error('缺少 --store');
-    const menu = await loadMenu(a.store, a.mode);
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
     const r = cardRoi({
       items: menu.items,
       cart: cartOf(a.cart),
@@ -368,26 +453,121 @@ const COMMANDS = {
     };
   },
 
+  /** 核价（官方权威价）。外送会自动带上 beCode，到店不需要。 */
   async price(a) {
-    if (!a.store) throw new Error('缺少 --store');
     const cart = cartOf(a.cart);
     if (!cart.length) throw new Error('缺少 --cart');
-    const m = modeOf(a.mode);
-    const text = await call('calculate-price', {
-      storeCode: a.store,
-      orderType: m.orderType,
-      beType: m.beType,
-      items: cart.map((c) => ({ productCode: c.code, quantity: c.qty })),
-    });
-    const data = P.extractData(text) || {};
+    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null });
+    const { storeCode, beCode, orderType, beType } = menu.__store;
+
+    const args = { storeCode, orderType, beType, items: cart.map((c) => ({ productCode: c.code, quantity: c.qty })) };
+    if (beCode) args.beCode = beCode;
+
+    const data = P.extractData(await call('calculate-price', args)) || {};
+    const takeWay = (data.takeWayList || []).map((t) => ({ title: t.title, code: t.takeWayCode || t.code }));
     return {
       ok: true,
+      mode: menu.stats.mode,
+      storeCode,
+      beCode: beCode || null,
       productPriceYuan: yuan(data.productPrice),
       discountYuan: yuan(data.discount),
       payableYuan: yuan(data.price),
-      takeWay: (data.takeWayList || []).map((t) => ({ title: t.title, code: t.takeWayCode || t.code })),
+      takeWay,
       lines: (data.productList || []).map((p) => ({ name: p.productName, subtotalYuan: yuan(p.subtotal) })),
       warn: data.price === 0 ? '核价返回 0 —— 通常是 productCode 传错（静默失败），请检查 code 是否正确。' : undefined,
+      note:
+        orderType === 1
+          ? '到店下单必须带 takeWayCode（从 takeWay 里选）。'
+          : '外送下单不传 takeWayCode，但要带 addressId。',
+    };
+  },
+
+  /**
+   * 下单 —— ⚠️ **写入操作**，会在你的麦当劳账号里创建一张真实订单。
+   *
+   * 安全设计：
+   *  ① 不带 --confirm 时只做**预演**，打印清单与金额，绝不创建订单；
+   *  ② 本命令**不涉及支付**，创建后需在麦当劳官方 App / 小程序里付款；
+   *  ③ 到店场景若 takeWayList 有多个取餐方式且没指定，会拒绝执行并要求先选。
+   */
+  async order(a) {
+    const cart = cartOf(a.cart);
+    if (!cart.length) throw new Error('缺少 --cart');
+    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null });
+    const { storeCode, beCode, orderType, beType, mode } = menu.__store;
+
+    // 先核价：既拿到最终金额，也是 takeWayCode 的唯一来源
+    const priceArgs = { storeCode, orderType, beType, items: cart.map((c) => ({ productCode: c.code, quantity: c.qty })) };
+    if (beCode) priceArgs.beCode = beCode;
+    const priced = P.extractData(await call('calculate-price', priceArgs)) || {};
+    const takeWayList = (priced.takeWayList || []).map((t) => ({ title: t.title, code: t.takeWayCode || t.code }));
+
+    let takeWayCode = a['take-way'] || null;
+    if (orderType === 1) {
+      // 传了就必须是合法的 —— 否则会静默按错误方式下单
+      if (takeWayCode && takeWayList.length && !takeWayList.some((t) => t.code === takeWayCode)) {
+        return {
+          ok: false,
+          invalidTakeWayCode: true,
+          takeWay: takeWayList,
+          error: `--take-way "${takeWayCode}" 不在可选范围内，请从 takeWay 里选一个。`,
+        };
+      }
+      if (!takeWayCode) {
+        if (takeWayList.length === 1) takeWayCode = takeWayList[0].code;
+        else
+          return {
+            ok: false,
+            needsTakeWayCode: true,
+            takeWay: takeWayList,
+            error: '到店下单需要指定取餐方式，请从 takeWay 里选一个，用 --take-way <code> 传入。',
+          };
+      }
+    }
+
+    const items = cart.map((c) => ({ productCode: c.code, quantity: c.qty }));
+    const preview = {
+      mode,
+      storeCode,
+      beCode: beCode || null,
+      orderType,
+      takeWayCode,
+      takeWayTitle: (takeWayList.find((t) => t.code === takeWayCode) || {}).title || null,
+      addressId: orderType === 2 ? a.address : undefined,
+      items: items.map((i) => {
+        const it = menu.byCode.get(i.productCode);
+        return { code: i.productCode, name: it?.name ?? null, qty: i.quantity, unitYuan: yuan(it?.price) };
+      }),
+      payableYuan: yuan(priced.price),
+      discountYuan: yuan(priced.discount),
+    };
+
+    if (a.confirm !== true && a.confirm !== 'true') {
+      return {
+        ok: true,
+        confirmed: false,
+        ...preview,
+        warning:
+          '⚠️ 这是**预演，没有创建订单**。下单是写入操作，会在你的麦当劳账号里生成一张真实订单（未支付）。' +
+          '确认清单与金额无误后，再加 --confirm 才会真正下单。',
+      };
+    }
+
+    const orderArgs = { storeCode, orderType, beType, items };
+    if (beCode) orderArgs.beCode = beCode;
+    if (takeWayCode) orderArgs.takeWayCode = takeWayCode;
+    if (orderType === 2) orderArgs.addressId = a.address;
+    if (a.remark) orderArgs.remark = a.remark;
+
+    const data = P.extractData(await call('create-order', orderArgs)) || {};
+    return {
+      ok: true,
+      confirmed: true,
+      ...preview,
+      orderId: data.orderId || data.orderCode || data.id || null,
+      order: data,
+      note: '订单已创建（未支付）。请到麦当劳官方 App / 小程序完成付款。',
     };
   },
 };
@@ -423,6 +603,31 @@ function humanize(cmd, d) {
       .filter(Boolean)
       .join('\n');
   }
+  if (cmd === 'addresses') {
+    const L = [`共 ${d.count} 个收货地址：`];
+    for (const a of d.addresses) L.push(`  [${a.addressId}] ${a.contactName} ${a.phone}  ${a.fullAddress}`);
+    return L.join('\n');
+  }
+  if (cmd === 'order') {
+    // 提前返回的失败结果（如缺 takeWayCode）没有 items，不能按成功结构渲染
+    if (!Array.isArray(d.items)) return JSON.stringify(d, null, 2);
+    const L = [];
+    L.push(`渠道：${d.mode === 'delivery' ? '麦乐送' : '到店取餐'}　门店：${d.storeCode}`);
+    if (d.takeWayTitle) L.push(`取餐方式：${d.takeWayTitle}（${d.takeWayCode}）`);
+    L.push('清单：');
+    for (const i of d.items) L.push(`  ${i.name ?? i.code} ×${i.qty}  ${i.unitYuan}`);
+    L.push(`应付：${d.payableYuan}　优惠：${d.discountYuan}`);
+    if (!d.confirmed) {
+      L.push('');
+      L.push('⚠️ 以上是**预演，没有创建订单**。');
+      L.push('确认无误后，在命令末尾加 --confirm 才会真正下单。');
+    } else {
+      L.push('');
+      L.push(`✔ 订单已创建：${d.orderId ?? '(未返回订单号)'}`);
+      L.push('请到麦当劳官方 App / 小程序完成付款。');
+    }
+    return L.join('\n');
+  }
   return JSON.stringify(d, null, 2);
 }
 
@@ -436,13 +641,26 @@ async function main() {
       [
         '麦麦点餐官 CLI',
         '',
-        '  stores   --city 北京 [--keyword 国贸] [--mode takein|delivery]',
-        '  menu     --store <storeCode> [--mode takein] [--no-enrich]',
-        '  solve    --store <code> --wants "汉堡,饮料,小食" [--budget 40] [--max-kcal 700] [--min-protein 20] [--avoid 花生]',
-        '  advise   --store <code> --cart "1100:1,4810:1" [--mode takein]',
+        '本工具支持两种渠道：',
+        '  到店取餐（默认）  --mode takein',
+        '  麦乐送（外送）    --mode delivery  ← 必须再给 --address <地址ID>',
+        '',
+        '  addresses            列出麦乐送收货地址（拿 addressId）',
+        '  stores   [--city 北京] [--keyword 国贸] [--mode takein|delivery] [--address <id>]',
+        '  menu     [--store <code>] [--mode takein] [--address <id>] [--no-enrich]',
+        '  solve    --wants "汉堡,饮料,小食" [--store <code>] [--budget 40] [--max-kcal 700] [--min-protein 20] [--avoid 花生]',
+        '  advise   --cart "1100:1,4810:1" [--store <code>]',
         '  card-roi --store <code> [--cart "..."] [--fee 19] [--visits 8]',
-        '  price    --store <code> --cart "..."',
+        '  price    --cart "..." [--store <code>]',
+        '  order    --cart "..." [--store <code>] [--take-way <code>] [--remark 备注] [--confirm]',
+        '           ⚠️ 不带 --confirm 只做预演，不会创建订单',
         '  tools',
+        '',
+        '外送示例：',
+        '  node cli.mjs addresses',
+        '  node cli.mjs menu  --mode delivery --address <addressId>',
+        '  node cli.mjs solve --mode delivery --address <addressId> --wants "汉堡,饮料" --budget 50',
+        '  node cli.mjs order --mode delivery --address <addressId> --cart "..." --confirm',
         '',
         '通用：--text 输出人话（默认 JSON）',
         '',

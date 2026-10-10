@@ -47,11 +47,48 @@
 
 ## 支持麦乐送（外送）吗
 
-支持，传 `--mode delivery`。但注意外送与到店的**菜单和价格是两套**，
-不要用一套的 `storeCode` 去查另一套。
+支持，加 `--mode delivery --address <地址ID>`。
+
+**注意这不是"换个参数"那么简单**：外送与到店的**菜单和价格是两套**。
+实测同一家门店的「巨无霸」：到店 ¥25.5，麦乐送 **¥28.5**。
+所以不要把到店的价格套到外送问题上。
+
+外送还多了两步前置：
+1. `delivery-query-addresses` 拿收货地址（⚠️ 工具名是**复数** addresses；
+   文档里提到的 `delivery-query-address` 单数形式**不存在**，调用会返回 `unknown tool`）
+2. `delivery-query-stores` 用地址查可配送门店，拿到 `storeCode` + **`beCode`**
+
+`beCode` 是外送核价与下单的**必传参数**，到店场景则不需要。CLI 已封装，给 `--address` 即可。
 
 ## 能帮用户下单吗
 
-**不能，本 Skill 只做决策。**
-`create-order` / `draw-lottery` / `party-order-create` 等写入类工具一律不调用。
-下单请用户在麦当劳官方 App 或小程序里完成。
+**能，但必须由用户明确确认。** 走 `order` 命令：
+
+```bash
+# 第 1 步：预演（不会创建订单）
+node cli.mjs order --store 1950564 --cart "1100:1" --take-way eat-in
+
+# 第 2 步：把清单/金额复述给用户，等他明确同意
+
+# 第 3 步：才加 --confirm
+node cli.mjs order --store 1950564 --cart "1100:1" --take-way eat-in --confirm
+```
+
+- **不带 `--confirm` 一定不会创建订单**，这是硬保证
+- 到店下单必须带 `--take-way`（选项来自核价返回的 `takeWayList`，通常是 堂食 / 外带）；
+  没给且选项不止一个时，命令会拒绝执行并把选项列出来
+- 外送下单不传 `takeWayCode`，但必须传 `addressId`
+- **不涉及支付** —— 订单创建后是「未支付」状态，要去麦当劳官方 App / 小程序付款
+
+## 为什么下单前一定要先核价
+
+两个原因：
+
+1. `takeWayCode` 的**唯一来源**就是 `calculate-price` 返回的 `takeWayList`，
+   不核价就没有合法的取餐方式可传
+2. 菜单价 ≠ 实付价。优惠、配送费都在核价里体现（实测同一单：商品价 ¥15.50，实付 ¥21.50）
+
+## 门店/外卖的价格会变吗
+
+会。这是实时数据，而且**菜单本身也会变**（实测同门店从 114 个 SKU 变成 122 个）。
+所以：不要缓存太久、不要把某次查询的价格当成"标准答案"，过期了就重新拉。

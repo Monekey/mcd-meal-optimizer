@@ -73,11 +73,23 @@ const modeToParams = (mode) =>
 /* ---------------------------------- 门店 ---------------------------------- */
 
 async function getStores({ mode = 'takein', city = '北京', keyword = '', addressId = null } = {}) {
-  const { orderType, beType } = modeToParams(mode);
+  const { beType } = modeToParams(mode);
 
   if (mode === 'delivery') {
-    const r = await client.call('delivery-query-stores', { orderType, beType, addressId, city, keyword });
-    return { ok: r.ok, stores: P.extractData(r.text) || [], raw: r.ok ? undefined : r.text.slice(0, 400) };
+    // 外送查门店只认地址：delivery-query-stores 的必填参数是 beType + addressId。
+    // 早期版本在这里传了 city/keyword 而没传 addressId（当成了到店接口），结果永远是空列表。
+    if (!addressId) {
+      return {
+        ok: false,
+        needsAddress: true,
+        stores: [],
+        hint: '麦乐送必须先选收货地址。先调 GET /api/addresses 拿 addressId，再带 addressId 查询。',
+      };
+    }
+    const r = await client.call('delivery-query-stores', { beType, addressId });
+    if (!r.ok) return { ok: false, stores: [], raw: r.error || r.text.slice(0, 300) };
+    const d = P.extractData(r.text) || {};
+    return { ok: true, stores: d.stores || (Array.isArray(d) ? d : []) };
   }
 
   // 实测：searchType=2（按位置）+ 空 keyword 会返回空数组，
@@ -98,15 +110,28 @@ async function getStores({ mode = 'takein', city = '北京', keyword = '', addre
   return { ok: true, stores: [], strategy: 'all-failed' };
 }
 
+/* --------------------------------- 收货地址 -------------------------------- */
+
+async function getAddresses() {
+  const r = await client.call('delivery-query-addresses', {});
+  if (!r.ok) return { ok: false, addresses: [], error: r.error || null };
+  const d = P.extractData(r.text) || {};
+  const list = d.addresses || (Array.isArray(d) ? d : []);
+  return { ok: true, addresses: list };
+}
+
+
 /* ---------------------------------- 菜单 ---------------------------------- */
 
-async function getMenu(storeCode, mode = 'takein') {
-  const key = `${storeCode}:${mode}`;
+async function getMenu(storeCode, mode = 'takein', beCode = null) {
+  const key = `${storeCode}:${mode}:${beCode || ''}`;
   const hit = menuCache.get(key);
   if (hit && Date.now() - hit.at < MENU_TTL_MS) return hit.value;
 
   const { orderType, beType } = modeToParams(mode);
-  const menuRaw = P.extractData((await client.call('query-meals', { storeCode, orderType, beType })).text);
+  const args = { storeCode, orderType, beType };
+  if (beCode) args.beCode = beCode; // 外送/得来速/团餐必传
+  const menuRaw = P.extractData((await client.call('query-meals', args)).text);
   if (!menuRaw) throw new Error('菜单拉取失败（MCP 返回空或超时）');
 
   const nutriRes = await client.call('list-nutrition-foods', {});
@@ -193,8 +218,17 @@ async function api(req, res, url) {
     });
   }
 
+  if (p === '/api/addresses') {
+    return json(res, 200, await getAddresses());
+  }
+
   if (p === '/api/stores') {
-    const r = await getStores({ mode: q.get('mode') || 'takein', city: q.get('city') || '北京', keyword: q.get('keyword') || '' });
+    const r = await getStores({
+      mode: q.get('mode') || 'takein',
+      city: q.get('city') || '北京',
+      keyword: q.get('keyword') || '',
+      addressId: q.get('addressId') || null,
+    });
     return json(res, 200, r);
   }
 
@@ -203,10 +237,11 @@ async function api(req, res, url) {
     const mode = q.get('mode') || 'takein';
     if (!storeCode) return json(res, 400, { error: 'storeCode 必填' });
     try {
-      const m = await getMenu(storeCode, mode);
+      const m = await getMenu(storeCode, mode, q.get('beCode') || null);
       return json(res, 200, {
         storeCode,
         mode,
+        beCode: q.get('beCode') || null,
         fetchedAt: m.fetchedAt,
         stats: m.stats,
         categories: m.menu.categories,
@@ -226,7 +261,7 @@ async function api(req, res, url) {
     const body = await readBody(req);
     const storeCode = body.storeCode;
     if (!storeCode) return json(res, 400, { error: 'storeCode 必填' });
-    const m = await getMenu(storeCode, body.mode || 'takein');
+    const m = await getMenu(storeCode, body.mode || 'takein', body.beCode || null);
     const coupons = (await getCoupons()).list;
     const profile = body.profileId ? profiles.get(body.profileId) : profiles.active();
     const constraints = { ...profiles.toConstraints(profile), ...(body.constraints || {}) };
@@ -236,14 +271,14 @@ async function api(req, res, url) {
 
   if (p === '/api/advise' && req.method === 'POST') {
     const body = await readBody(req);
-    const m = await getMenu(body.storeCode, body.mode || 'takein');
+    const m = await getMenu(body.storeCode, body.mode || 'takein', body.beCode || null);
     const coupons = (await getCoupons()).list;
     return json(res, 200, O.advise(body.cart || [], { menu: m.menu, coupons, constraints: body.constraints || {} }));
   }
 
   if (p === '/api/card-roi') {
     const storeCode = q.get('storeCode');
-    const m = await getMenu(storeCode, q.get('mode') || 'takein');
+    const m = await getMenu(storeCode, q.get('mode') || 'takein', q.get('beCode') || null);
     const cart = q.get('cart') ? JSON.parse(q.get('cart')) : [];
     const fee = q.get('feeFen');
     const visits = q.get('visits');
@@ -276,13 +311,11 @@ async function api(req, res, url) {
       if (i.couponCode) row.couponCode = i.couponCode;
       return row;
     });
-    const r = await client.call('calculate-price', {
-      storeCode: body.storeCode,
-      orderType,
-      beType,
-      items,
-      ...(body.reservationDate ? { reservationDate: body.reservationDate } : {}),
-    });
+    const priceArgs = { storeCode: body.storeCode, orderType, beType, items };
+    // 外送/得来速/团餐的核价必须带 beCode，否则拿不到正确价格
+    if (beType !== 1 && body.beCode) priceArgs.beCode = body.beCode;
+    if (body.reservationDate) priceArgs.reservationDate = body.reservationDate;
+    const r = await client.call('calculate-price', priceArgs);
     return json(res, r.ok ? 200 : 502, { ok: r.ok, data: P.extractData(r.text), error: r.error || null, raw: r.ok ? undefined : r.text.slice(0, 600) });
   }
 
@@ -296,10 +329,26 @@ async function api(req, res, url) {
       storeCode: body.storeCode,
       orderType,
       beType,
-      takeWayCode: body.takeWayCode || 'take-in-store',
       items: (body.items || []).map((i) => ({ productCode: i.code, quantity: i.qty || 1 })),
     };
-    if (orderType === 2 && body.addressId) args.addressId = body.addressId;
+    // ⚠️ takeWayCode 的合法取值只有核价返回的 takeWayList 里的 code（如 eat-in / 外带）。
+    // 早期版本写死成 'take-in-store'，那是个不存在的值，会带着错误参数去下单。
+    // 到店（orderType=1）必传且必须显式给出；外送不传。
+    if (orderType === 1) {
+      if (!body.takeWayCode) {
+        return json(res, 400, {
+          error: '到店下单必须提供 takeWayCode（取值范围见 /api/price 返回的 takeWayList）',
+          needTakeWayCode: true,
+        });
+      }
+      args.takeWayCode = body.takeWayCode;
+    } else {
+      if (body.beCode) args.beCode = body.beCode;
+      if (!body.addressId) {
+        return json(res, 400, { error: '外送下单必须提供 addressId', needAddress: true });
+      }
+      args.addressId = body.addressId;
+    }
     if (body.remark) args.remark = body.remark;
     const r = await client.call('create-order', args);
     return json(res, r.ok ? 200 : 502, { ok: r.ok, data: P.extractData(r.text), error: r.error || null });
