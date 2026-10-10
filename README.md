@@ -19,8 +19,18 @@
 **麦麦点餐官把"点餐"变成一个可计算的问题：** 你说想吃什么品类，它枚举全部可行组合，用官方核价确认，给你三条路线 —— **最省 / 最平衡 / 更轻**，每一条都带实付金额、总热量和逐项拆解。
 
 > ### 👉 不用装任何东西，直接玩
-> 打开 **`docs/index.html`**（本地双击即可），或部署后访问 `https://Monekey.github.io/mcd-meal-optimizer/`。
+> **<https://monekey.github.io/mcd-meal-optimizer/>**
 > 里面内置了一家门店的真实数据快照与同一套算法 —— **不需要 MCP Token**。
+> （也可以在本地双击 `docs/index.html` 打开。）
+
+### 参赛信息
+
+本项目参加 **2026 麦当劳程序员创意开发大赛**。
+
+- 报名 Issue：[M-China/mcd-developer-innovation-challenge#189](https://github.com/M-China/mcd-developer-innovation-challenge/issues/189)
+- 在官方 MCP 仓库提交的实测反馈（工具数与字段映射问题）：
+  [M-China/mcd-mcp-server#16](https://github.com/M-China/mcd-mcp-server/issues/16)
+- 参赛声明：`CONTEST_DECLARATION.md`（使用官方原文，未做任何改动）
 
 ---
 
