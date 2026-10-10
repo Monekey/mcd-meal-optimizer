@@ -25,7 +25,7 @@
 
 | Tool | 用途 | 关键参数 |
 |---|---|---|
-| `query-meals` | 拉取门店实时菜单（分类 + 114 个在售 SKU + 价格 + 麦金卡标记） | `storeCode`、`orderType`、`beType` |
+| `query-meals` | 拉取门店实时菜单（分类 + 122 个在售 SKU + 价格 + 麦金卡标记） | `storeCode`、`orderType`、`beType` |
 | `query-meal-detail` | 解析套餐默认组成，用于补全套餐营养 | `storeCode`、`code` |
 | `list-nutrition-foods` | 160 个餐品的能量/蛋白/脂肪/碳水/钠/钙 | 无 |
 

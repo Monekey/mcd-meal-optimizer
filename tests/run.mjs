@@ -9,7 +9,7 @@
 
 import assert from 'node:assert/strict';
 import { toFen, toYuanStr, normName, normalizeMenu, attachNutrition, sumNutrition } from '../core/menu.mjs';
-import { solve, advise, cartTotals, wantsFromCart, applyCoupons } from '../core/optimizer.mjs';
+import { solve, advise, cartTotals, wantsFromCart, applyCoupons, foodGroup, kindOf } from '../core/optimizer.mjs';
 import { cardRoi } from '../core/card-roi.mjs';
 import { parseNutritionTable, parseCouponTitle, parseCouponChannel, parseCouponList, extractData, parseMarkdownTables } from '../server/parse.mjs';
 
@@ -256,6 +256,25 @@ t('★ 多个单品可以打包成套餐并明确省钱', () => {
   assert.equal(bundle.coveredCodes.length, 3);
 });
 
+t('★ 「还能再省」是可达值，不是所有建议相加（打包建议互斥）', () => {
+  const m = normalizeMenu(FIXTURE_MENU);
+  attachNutrition(m.items, FIXTURE_NUTRITION);
+  m.byCode.get('C1').nutrition = {
+    ...m.byCode.get('C1').nutrition,
+    components: [{ name: '巨无霸' }, { name: '中薯条' }, { name: '中杯可乐' }],
+  };
+  const r = advise([{ code: 'B1', qty: 1 }, { code: 'S1', qty: 1 }, { code: 'D1', qty: 1 }], { menu: m, coupons: [] });
+
+  const b = r.totalSaveBreakdown;
+  assert.ok(b, '应给出可解释的拆解');
+  assert.equal(r.totalSaveFen, Math.max(b.bySwapFen, b.bestBundleFen));
+  assert.equal(b.strategy, b.bestBundleFen > b.bySwapFen ? 'bundle' : b.bySwapFen > 0 ? 'swap' : 'none');
+
+  // 关键断言：不能把互斥的打包建议加总（那会虚报）
+  const sumAll = r.suggestions.reduce((s, x) => s + Math.max(0, x.saveFen), 0);
+  assert.ok(r.totalSaveFen <= sumAll, '总节省不应超过所有建议之和');
+});
+
 t('购物车建议：麦金卡价被正确算进基线', () => {
   const r = cartTotals([{ code: 'B2', qty: 1 }], ctx);
   assert.equal(r.payableFen, 3700);
@@ -274,6 +293,56 @@ t('购物车建议：非食品（周边/酱料）不会被当成小食推荐', (
   attachNutrition(m.items, [{ productName: '中薯条', energyKcal: 289, protein: 4, fat: 12, carbohydrate: 38, sodium: 165, calcium: 18 }]);
   const r = advise([{ code: 'S1', qty: 1 }], { menu: m, coupons: [] });
   assert.ok(!r.suggestions.some((s) => s.to.code === 'S2'), '不应把毛绒周边推荐成小食替代');
+});
+
+t('★ 单品替换必须同食物类别：薯条不会被换成冰淇淋', () => {
+  // 真实门店里薯条、冰淇淋、苹果片全在同一个「小食甜品/其他」品类下。
+  // 只按品类挑替代就会给出「中薯条 ¥13.5 → 灰焰圆筒 ¥6」——那不是同类替换，是换品类。
+  const m = normalizeMenu({
+    categories: [{ name: '小食甜品/其他', meals: [{ code: 'F1', tags: [] }, { code: 'I1', tags: [] }] }],
+    meals: {
+      F1: { name: '大薯条', currentPrice: '14', originalPrice: '14' },
+      I1: { name: '灰焰圆筒', currentPrice: '6', originalPrice: '6' },
+    },
+  });
+  attachNutrition(m.items, [
+    { productName: '大薯条', energyKcal: 340, protein: 4, fat: 15, carbohydrate: 45, sodium: 200, calcium: 20 },
+    { productName: '灰焰圆筒', energyKcal: 200, protein: 3, fat: 8, carbohydrate: 28, sodium: 60, calcium: 90 },
+  ]);
+  const r = advise([{ code: 'F1', qty: 1 }], { menu: m, coupons: [] });
+  assert.ok(
+    !r.suggestions.some((s) => s.to.code === 'I1'),
+    '薯条 → 冰淇淋 属于换品类，不是同类替换'
+  );
+});
+
+t('★ foodGroup：堡 优先于 鸡腿，不能把鸡腿堡判成炸鸡', () => {
+  assert.equal(foodGroup({ name: '大薯条' }), 'fries');
+  assert.equal(foodGroup({ name: '灰焰圆筒' }), 'icecream');
+  assert.equal(foodGroup({ name: '巨无霸' }), 'burger');
+  assert.equal(foodGroup({ name: '板烧鸡腿堡' }), 'burger');
+  assert.equal(foodGroup({ name: '麦辣鸡翅' }), 'chicken');
+  assert.equal(foodGroup({ name: '中杯可乐' }), 'drink');
+  assert.equal(foodGroup({ name: '安格斯厚牛堡四件套随心选' }), 'burger');
+  assert.equal(foodGroup({ name: '某个没见过的名字' }), 'other');
+  // kindOf 与 foodGroup 是两套正交的判定：套餐/单品 vs 食物类别
+  assert.equal(kindOf({ name: '巨无霸' }), 'single');
+  assert.equal(kindOf({ name: '巨无霸三件套' }), 'combo');
+});
+
+t('★ wants.categories：一个口语词可以横跨多个品类', () => {
+  // 「汉堡」真实横跨 鸡肉汉堡/卷、巨无霸牛鱼肉堡、安格斯MAX厚牛堡 三个品类，
+  // 只允许传单个 category 时会被迫窄化成一个，候选空间被砍掉大半。
+  const one = solve({ wants: [{ label: '汉堡', category: '巨无霸牛鱼肉堡', qty: 1 }], constraints: {} }, ctx);
+  const many = solve(
+    { wants: [{ label: '汉堡', categories: ['巨无霸牛鱼肉堡', '小食'], qty: 1 }], constraints: {} },
+    ctx
+  );
+  assert.ok(one.evaluated > 0, '单品类应有候选');
+  assert.ok(many.evaluated > one.evaluated, `多品类应评估更多组合（${one.evaluated} → ${many.evaluated}）`);
+  // 不存在的品类应当被安全忽略，而不是报错
+  const none = solve({ wants: [{ label: '汉堡', categories: ['不存在的品类'], qty: 1 }], constraints: {} }, ctx);
+  assert.equal(none.evaluated, 0);
 });
 
 /* -------------------------------- 麦金卡 -------------------------------- */

@@ -303,6 +303,22 @@ function viewCard() {
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+/* 快照信息从 DATA.meta 读，避免写死在文案里又过期。
+ * 菜单和价格会变，所以这里如实标出「快照时间」，不假装是实时数据。 */
+(function fillSnapshotInfo() {
+  const el = document.getElementById('snapInfo');
+  if (!el) return;
+  const m = DATA.meta || {};
+  const d = m.fetchedAt ? String(m.fetchedAt).slice(0, 10) : '';
+  const known = m.withNutrition ?? (MENU.items || []).filter((i) => i.nutrition?.kcal != null).length;
+  const total = m.sku ?? (MENU.items || []).length;
+  const pct = total ? Math.round((known / total) * 100) : 0;
+  el.textContent =
+    `${m.storeName || '麦当劳门店'}，${total} 个在售餐品，` +
+    `${known} 个有热量数据（${pct}%）` +
+    (d ? `，快照于 ${d}` : '');
+})();
+
 renderRail();
 renderList();
 renderCart();

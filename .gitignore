@@ -13,3 +13,8 @@ node_modules/
 
 # 任何可能含真实凭证的文件
 mcp-config.json
+
+# 本地临时探查/调试脚本（不属于交付物）
+.probe/
+.verify/
+skills/*/scripts/.cache/
