@@ -5,6 +5,7 @@ display_name_en: McOrder
 description: 麦麦点餐官。当用户提到麦当劳/麦麦/麦乐送/到店取餐，想点餐、想省钱、想知道怎么搭配最划算或最健康、想算麦金卡值不值得买、想对比不同套餐的价格与热量时使用。基于麦当劳中国官方 MCP，做价格与热量的双目标组合优化，并给出麦金卡盈亏平衡点。
 description_zh: 基于麦当劳中国官方 MCP 的价格×热量双目标点餐优化器。输入想吃的品类与预算/热量约束，枚举门店真实组合并给出「最省 / 最平衡 / 更轻」三条路线，附麦金卡 ROI 精算与购物车实时省钱建议。
 description_en: A dual-objective (price × calories) McDonald's China meal optimizer built on the official McDonald's China MCP. Enumerates real menu combinations and returns three plans (cheapest / balanced / lightest), plus McCard ROI breakeven analysis.
+category: life
 version: 1.0.0
 author: Monekey
 ---
@@ -15,11 +16,29 @@ author: Monekey
 
 ## 依赖
 
-- 已配置并信任的麦当劳 MCP 连接器（`https://mcp.mcd.cn`，Streamable HTTP，需要用户自己的 MCP Token）
-- 本 Skill 自带的确定性算法层（`scripts/`，Node.js 18+，**零第三方依赖**）
+- **Node.js 18+**（`scripts/` 零第三方依赖，只要有 node 就能跑）
+- 想用**实时**菜单/价格/下单，需要用户自己的麦当劳 MCP Token
 
-> **如果用户还没有 MCP Token**：引导他去 <https://open.mcd.cn/mcp> 用手机号登录，
-> 在右上角「控制台」激活并复制 Token，然后填进 WorkBuddy 的【连接器】配置里启用 `mcd-mcp`。
+## 🔑 没 Token 也能用（先试这个，别一上来就问用户要 Token）
+
+`scripts/snapshot.json` 内置了一家门店（`storeCode=1950564`）的**真实菜单快照**，
+含 122 个在售 SKU 与 87 项已补全的营养数据。没 Token 时以下命令**会自动回退到快照**，
+跑的是**完全相同的算法**：
+
+```bash
+node scripts/cli.mjs solve  --store 1950564 --wants "汉堡,饮料,小食" --budget 45
+node scripts/cli.mjs advise --store 1950564 --cart "1100:1,4810:1"
+node scripts/cli.mjs card-roi --store 1950564 --fee 19
+node scripts/cli.mjs menu   --store 1950564
+```
+
+**必须如实告诉用户这是快照**（快照时间见 `stats.fetchedAt`，价格可能已变），
+并说明「配 Token 后可拿到实时价与核价」。加 `--offline` 可强制走快照。
+
+需要 Token 的只有：`stores` / `tools` / `price` / `order` / `addresses` / 麦乐送全链路。
+
+> 引导用户获取 Token：<https://open.mcd.cn/mcp> 用手机号登录 → 右上角「控制台」→ 激活 → 复制 Token，
+> 然后填进 WorkBuddy 的【连接器】配置里启用 `mcd-mcp`。
 > 本 Skill 会从环境变量 `MCD_MCP_TOKEN` 或本机 `~/.workbuddy/mcp.json` 自动读取，**不需要用户手动传参**。
 
 ## 核心原则（不要违反）

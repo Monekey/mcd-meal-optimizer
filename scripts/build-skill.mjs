@@ -52,10 +52,35 @@ function checkFrontmatter() {
   const body = fm[1];
   const has = (k) => new RegExp(`^${k}:\\s*\\S`, 'm').test(body);
 
-  // 技能市场要求的必填字段
-  const required = ['description', 'description_zh', 'description_en', 'version', 'author'];
+  // 技能市场要求的必填字段（对齐 open.workbuddy.cn/docs/skill 的字段表）
+  const required = ['description', 'description_zh', 'description_en', 'version', 'author', 'category'];
   const missing = required.filter((k) => !has(k));
   return { ok: missing.length === 0, missing };
+}
+
+/** 关键资源是否齐全（缺了会让技能装上就坏） */
+function checkAssets() {
+  const problems = [];
+  const snap = path.join(SCRIPTS, 'snapshot.json');
+  if (!fs.existsSync(snap)) {
+    problems.push('scripts/snapshot.json 缺失 —— 没 Token 的用户会完全无法使用');
+  } else {
+    try {
+      const s = JSON.parse(fs.readFileSync(snap, 'utf8'));
+      if (!s.items?.length) problems.push('snapshot.json 里 items 为空');
+      if (!s.categories?.length) problems.push('snapshot.json 里 categories 为空');
+    } catch (e) {
+      problems.push(`snapshot.json 不是合法 JSON：${e.message}`);
+    }
+  }
+
+  // SKILL.md 里引用的 references 文件必须真实存在（引用了但没有 = 断链）
+  const md = fs.readFileSync(path.join(SKILL_DIR, 'SKILL.md'), 'utf8');
+  for (const m of md.matchAll(/@([\w./-]+\.md)/g)) {
+    const ref = path.join(SKILL_DIR, m[1]);
+    if (!fs.existsSync(ref)) problems.push(`SKILL.md 引用了不存在的文件：${m[1]}`);
+  }
+  return problems;
 }
 
 function main() {
@@ -65,9 +90,18 @@ function main() {
   /* 1. 检查 frontmatter ---------------------------------------- */
   line('\n[1] 检查 SKILL.md frontmatter（技能市场的必填字段）');
   const fm = checkFrontmatter();
-  if (fm.ok) ok('description / description_zh / description_en / version / author 全部具备');
+  if (fm.ok) ok('description / description_zh / description_en / version / author / category 全部具备');
   else {
     bad(`缺少字段：${fm.missing.join(', ')}`);
+    process.exit(1);
+  }
+
+  /* 1b. 关键资源自检 ------------------------------------------- */
+  line('\n[1b] 检查关键资源（缺了会让技能装上就坏）');
+  const assetProblems = checkAssets();
+  if (!assetProblems.length) ok('snapshot.json 存在且合法；SKILL.md 的 @references 引用全部可解析');
+  else {
+    for (const p of assetProblems) bad(p);
     process.exit(1);
   }
 

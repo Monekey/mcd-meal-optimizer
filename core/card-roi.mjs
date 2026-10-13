@@ -59,7 +59,9 @@ export function cardRoi({ items, cart = [], visitsPerMonth = null, cardFeeFen = 
   const basketSaveFen = basketListFen - basketCardFen;
 
   // 盈亏平衡卡费：不依赖未知卡费的核心结论
-  const feeCeilingPerVisitFen = basketSaveFen > 0 ? basketSaveFen : median;
+  // ⚠️ 当这家店当期一款卡价商品都没有（实测早餐季 0 项），必须给 null 而不是 0 ——
+  // 「盈亏平衡卡费 0.00」会被读成"白送卡就回本"，是彻底的误导。
+  const feeCeilingPerVisitFen = eligible.length === 0 ? null : basketSaveFen > 0 ? basketSaveFen : median;
 
   const result = {
     eligibleCount: eligible.length,

@@ -1558,5 +1558,874 @@
    "枫糖风味厚松饼猪柳蛋堡"
   ],
   "source": "query-meal-detail"
+ },
+ "9900016524": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "巧克力味厚松饼猪柳蛋堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "巧克力味厚松饼猪柳蛋堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016178": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "巧克力味厚松饼猪柳蛋堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "巧克力味厚松饼猪柳蛋堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016171": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "枫糖风味厚松饼猪柳蛋堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "枫糖风味厚松饼猪柳蛋堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003728": {
+  "kcal": 606,
+  "protein": 18,
+  "fat": 28,
+  "carb": 71,
+  "sodium": 503,
+  "calcium": 57,
+  "components": [
+   {
+    "name": "脆香油条",
+    "qty": 2,
+    "kcal": 404
+   },
+   {
+    "name": "优品豆浆大杯",
+    "qty": 1,
+    "kcal": 202
+   }
+  ],
+  "unknownComponents": [],
+  "source": "query-meal-detail"
+ },
+ "9900003459": {
+  "kcal": 501,
+  "protein": 24,
+  "fat": 26,
+  "carb": 41,
+  "sodium": 1295,
+  "calcium": 145,
+  "components": [
+   {
+    "name": "双层原味板烧鸡腿麦满分",
+    "qty": 1,
+    "kcal": 355
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003466": {
+  "kcal": 565,
+  "protein": 28,
+  "fat": 30,
+  "carb": 44,
+  "sodium": 1026,
+  "calcium": 123,
+  "components": [
+   {
+    "name": "原味板烧鸡腿炒双蛋堡",
+    "qty": 1,
+    "kcal": 419
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003465": {
+  "kcal": 583,
+  "protein": 26,
+  "fat": 33,
+  "carb": 43,
+  "sodium": 1016,
+  "calcium": 123,
+  "components": [
+   {
+    "name": "猪柳炒双蛋堡",
+    "qty": 1,
+    "kcal": 437
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900013411": {
+  "kcal": 533,
+  "protein": 24,
+  "fat": 30,
+  "carb": 39,
+  "sodium": 1157,
+  "calcium": 250,
+  "components": [
+   {
+    "name": "猪柳蛋麦满分",
+    "qty": 1,
+    "kcal": 387
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003458": {
+  "kcal": 533,
+  "protein": 24,
+  "fat": 30,
+  "carb": 39,
+  "sodium": 1157,
+  "calcium": 250,
+  "components": [
+   {
+    "name": "猪柳蛋麦满分",
+    "qty": 1,
+    "kcal": 387
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016132": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "巧克力味厚松饼猪柳堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "巧克力味厚松饼猪柳堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900016176": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "枫糖风味厚松饼猪柳堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "枫糖风味厚松饼猪柳堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900013221": {
+  "kcal": 13,
+  "protein": 1,
+  "fat": 0,
+  "carb": 2,
+  "sodium": 0,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "吉士蛋麦满分",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "麦咖啡™冰美式中杯",
+    "qty": 1,
+    "kcal": 13
+   }
+  ],
+  "unknownComponents": [
+   "吉士蛋麦满分"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003469": {
+  "kcal": 627,
+  "protein": 19,
+  "fat": 35,
+  "carb": 57,
+  "sodium": 1207,
+  "calcium": 86,
+  "components": [
+   {
+    "name": "图林根香肠早安营养卷",
+    "qty": 1,
+    "kcal": 425
+   },
+   {
+    "name": "脆香油条",
+    "qty": 1,
+    "kcal": 202
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003468": {
+  "kcal": 646,
+  "protein": 21,
+  "fat": 36,
+  "carb": 58,
+  "sodium": 1295,
+  "calcium": 126,
+  "components": [
+   {
+    "name": "火腿扒早安营养卷",
+    "qty": 1,
+    "kcal": 444
+   },
+   {
+    "name": "脆香油条",
+    "qty": 1,
+    "kcal": 202
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003457": {
+  "kcal": 392,
+  "protein": 16,
+  "fat": 18,
+  "carb": 39,
+  "sodium": 922,
+  "calcium": 140,
+  "components": [
+   {
+    "name": "原味板烧鸡腿麦满分",
+    "qty": 1,
+    "kcal": 246
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003504": {
+  "kcal": 355,
+  "protein": 23,
+  "fat": 17,
+  "carb": 27,
+  "sodium": 984,
+  "calcium": 138,
+  "components": [
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "双层原味板烧鸡腿麦满分",
+    "qty": 1,
+    "kcal": 355
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003454": {
+  "kcal": 454,
+  "protein": 17,
+  "fat": 25,
+  "carb": 38,
+  "sodium": 1092,
+  "calcium": 220,
+  "components": [
+   {
+    "name": "猪柳麦满分",
+    "qty": 1,
+    "kcal": 308
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003425": {
+  "kcal": 437,
+  "protein": 25,
+  "fat": 24,
+  "carb": 29,
+  "sodium": 705,
+  "calcium": 116,
+  "components": [
+   {
+    "name": "猪柳炒双蛋堡",
+    "qty": 1,
+    "kcal": 437
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003424": {
+  "kcal": 419,
+  "protein": 27,
+  "fat": 21,
+  "carb": 30,
+  "sodium": 715,
+  "calcium": 116,
+  "components": [
+   {
+    "name": "原味板烧鸡腿炒双蛋堡",
+    "qty": 1,
+    "kcal": 419
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003491": {
+  "kcal": 387,
+  "protein": 23,
+  "fat": 21,
+  "carb": 25,
+  "sodium": 846,
+  "calcium": 243,
+  "components": [
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "猪柳蛋麦满分",
+    "qty": 1,
+    "kcal": 387
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003429": {
+  "kcal": 425,
+  "protein": 14,
+  "fat": 23,
+  "carb": 38,
+  "sodium": 977,
+  "calcium": 68,
+  "components": [
+   {
+    "name": "图林根香肠早安营养卷",
+    "qty": 1,
+    "kcal": 425
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900015605": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "东南亚风味椰香鸡扒堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "东南亚风味椰香鸡扒堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900011873": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "芝芝火腿扒堡",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "芝芝火腿扒堡",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003428": {
+  "kcal": 444,
+  "protein": 16,
+  "fat": 24,
+  "carb": 39,
+  "sodium": 1065,
+  "calcium": 108,
+  "components": [
+   {
+    "name": "火腿扒早安营养卷",
+    "qty": 1,
+    "kcal": 444
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003451": {
+  "kcal": 507,
+  "protein": 17,
+  "fat": 26,
+  "carb": 49,
+  "sodium": 1115,
+  "calcium": 137,
+  "components": [
+   {
+    "name": "大脆鸡扒麦满分",
+    "qty": 1,
+    "kcal": 361
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003493": {
+  "kcal": 246,
+  "protein": 15,
+  "fat": 9,
+  "carb": 25,
+  "sodium": 611,
+  "calcium": 133,
+  "components": [
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "原味板烧鸡腿麦满分",
+    "qty": 1,
+    "kcal": 246
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003423": {
+  "kcal": 308,
+  "protein": 16,
+  "fat": 16,
+  "carb": 24,
+  "sodium": 781,
+  "calcium": 213,
+  "components": [
+   {
+    "name": "猪柳麦满分",
+    "qty": 1,
+    "kcal": 308
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003453": {
+  "kcal": 146,
+  "protein": 1,
+  "fat": 9,
+  "carb": 14,
+  "sodium": 311,
+  "calcium": 7,
+  "components": [
+   {
+    "name": "吉士蛋麦满分",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "吉士蛋麦满分",
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003449": {
+  "kcal": 407,
+  "protein": 15,
+  "fat": 21,
+  "carb": 38,
+  "sodium": 919,
+  "calcium": 138,
+  "components": [
+   {
+    "name": "火腿扒麦满分",
+    "qty": 1,
+    "kcal": 261
+   },
+   {
+    "name": "脆薯饼",
+    "qty": 1,
+    "kcal": 146
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003455": {
+  "kcal": 361,
+  "protein": 16,
+  "fat": 17,
+  "carb": 35,
+  "sodium": 804,
+  "calcium": 130,
+  "components": [
+   {
+    "name": "大脆鸡扒麦满分",
+    "qty": 1,
+    "kcal": 361
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900003456": {
+  "kcal": 261,
+  "protein": 14,
+  "fat": 12,
+  "carb": 24,
+  "sodium": 608,
+  "calcium": 131,
+  "components": [
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   },
+   {
+    "name": "火腿扒麦满分",
+    "qty": 1,
+    "kcal": 261
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
+ },
+ "9900012729": {
+  "kcal": 202,
+  "protein": 5,
+  "fat": 12,
+  "carb": 19,
+  "sodium": 230,
+  "calcium": 18,
+  "components": [
+   {
+    "name": "脆香油条",
+    "qty": 1,
+    "kcal": 202
+   },
+   {
+    "name": "鲜萃冰咖",
+    "qty": 1,
+    "kcal": null
+   }
+  ],
+  "unknownComponents": [
+   "鲜萃冰咖"
+  ],
+  "source": "query-meal-detail"
  }
 }

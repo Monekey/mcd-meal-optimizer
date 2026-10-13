@@ -12,14 +12,23 @@
 | 产物 | 说明 |
 |---|---|
 | `skills/mcd-meal-optimizer/` | 已符合技能市场目录结构的技能包（含 `SKILL.md` / `scripts/` / `references/`） |
-| `dist/mcd-meal-optimizer-1.0.0.zip` | **可直接上传的 ZIP**（约 40 KB，远低于 3 MB 上限） |
-| `scripts/build-skill.mjs` | 打包脚本，改完代码重跑一次即可（会自检 frontmatter 与跨目录引用） |
+| `dist/mcd-meal-optimizer-1.0.0.zip` | **可直接上传的 ZIP**（约 50 KB，远低于 3 MB 上限） |
+| `scripts/build-snapshot.mjs` | 把门店真实菜单固化成 `scripts/snapshot.json`（**没有 Token 的用户靠它用上技能**） |
+| `scripts/build-skill.mjs` | 打包脚本，改完代码重跑一次即可（自检 frontmatter / 关键资源 / 跨目录引用 / 语法） |
 
-重新打包：
+重新打包（改完代码或菜单变动后）：
 
 ```bash
-node scripts/build-skill.mjs
+node scripts/export-demo-data.mjs   # ① 先刷门店真实菜单快照
+node scripts/build-snapshot.mjs     # ② 生成技能包内置快照
+node scripts/build-skill.mjs        # ③ 打包 + 全量自检
 ```
+
+`build-skill.mjs` 会在这几处直接报错退出，别绕过它：
+- frontmatter 缺 `description_zh` / `description_en` / `version` / `author` / `category`
+- `scripts/snapshot.json` 缺失或不是合法 JSON
+- `SKILL.md` 里 `@references/xxx.md` 引用了不存在的文件
+- 打包后会出现跨目录引用（`../`）导致断链
 
 ---
 
@@ -62,6 +71,7 @@ node scripts/build-skill.mjs
 | `author` | 是 | `Monekey` |
 | `name` | 否 | `mcd-meal-optimizer` |
 | `display_name` | 否 | `麦麦点餐官` |
+| `category` | 建议 | `life` |
 
 `node scripts/build-skill.mjs` 会在打包前自动校验这几个字段，缺任何一个都会直接报错退出。
 
@@ -80,7 +90,8 @@ mcd-meal-optimizer/
     ├── enrich.mjs         # 套餐营养补全
     ├── menu.mjs           # 菜单归一 + 营养匹配
     ├── optimizer.mjs      # 双目标组合求解 + 购物车建议
-    └── card-roi.mjs       # 麦金卡 ROI
+    ├── card-roi.mjs       # 麦金卡 ROI
+    └── snapshot.json      # 门店真实菜单快照（离线兜底，见下）
 ```
 
 **零第三方依赖**（只用 Node 内置模块），所以包体极小、不会因为依赖装不上而挂。
@@ -89,7 +100,23 @@ mcd-meal-optimizer/
 
 ## 四、用户装完之后怎么用
 
-技能会引导用户：
+### ✅ 第一步就能用，不需要任何配置
+
+技能内置了一份门店**真实菜单快照**（`scripts/snapshot.json`，96 个在售 SKU + 71 项营养数据，
+取自北京建外 SOHO 店）。**没有 MCP Token 也能立刻跑**：
+
+```bash
+node scripts/cli.mjs solve --store 1950564 --wants "麦满分,饮品,小食" --budget 35
+node scripts/cli.mjs advise --store 1950564 --cart "1254:1,4437:1,3757:1"
+node scripts/cli.mjs card-roi --store 1950564 --fee 19
+```
+
+> 这一条是刻意设计的：技能市场用户绝大多数没有麦当劳 Token。
+> 如果没 Token 就直接报错退出，装了等于没装，安装后评分也会掉。
+> 现在**没 Token 也能看到真实算法跑出来的结果**，SKILL.md 里也要求 AI 必须如实说明
+> 「这是快照、价格可能已变」。
+
+### 🔑 要实时价 / 核价 / 下单，才需要 Token
 
 1. 去 <https://open.mcd.cn/mcp> 用手机号登录 → 控制台 → 激活 → 复制 MCP Token
 2. 在 WorkBuddy 的【连接器】里启用 `mcd-mcp`（技能会自动读取，无需手动传参）
@@ -97,7 +124,10 @@ mcd-meal-optimizer/
 
 > 「我今天想在国贸那家麦当劳点个汉堡加饮料，40 块以内别太胖」
 
-技能会调用 `scripts/cli.mjs` 拿到确定性结果，再讲成人话。
+技能会调用 `scripts/cli.mjs` 拿确定性结果，再讲成人话。
+
+**需要 Token 的命令**：`stores` / `tools` / `price` / `order` / `addresses` / 麦乐送全链路。
+其余（`solve` / `advise` / `card-roi` / `menu`）无 Token 时自动走快照。
 
 ---
 
@@ -117,7 +147,9 @@ mcd-meal-optimizer/
 |---|---|---|
 | 上传 ZIP 后解析失败 | 目录层级多了一层（`mcd-meal-optimizer/mcd-meal-optimizer/SKILL.md`） | 用 `scripts/build-skill.mjs` 生成，它在 `skills/` 目录下打包，根目录就是 `mcd-meal-optimizer/` |
 | 提示缺少字段 | frontmatter 少了 `description_zh` / `description_en` / `version` / `author` 之一 | 打包脚本会提前拦住 |
-| 提示含敏感信息 | 包里混入了 Token / 缓存 | `.cache/` 已在打包时排除；确认没有手工塞过凭证 |
+| 提示含敏感信息 | 包里混入了 Token / 缓存 | `.cache/` 已在打包时排除；确认没有手工塞过凭证。快照 `snapshot.json` 只含商品与价格，可自行核查 |
+| 装上后报错说找不到 Token | 用户没配 Token | 已内置快照兜底，`solve`/`advise`/`card-roi`/`menu` 无需 Token；如仍报错请反馈 |
+| 菜单价格与实际不符 | 快照是某一时点的真实数据，门店会换季 | 属预期行为，配 Token 后自动走实时价；快照与实时永远以实时为准 |
 | 安全审核不过 | 技能里有写入类操作 | 本技能**只读**，不调用 `create-order` / `draw-lottery` 等写操作，已写进 SKILL.md 的「不要做的事」 |
 
 > 官方文档说明：解析失败可发邮件到 **openworkbuddy@tencent.com**，

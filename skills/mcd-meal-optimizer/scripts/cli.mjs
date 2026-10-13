@@ -68,24 +68,23 @@ function modeOf(v) {
 
 const client = new McdMcpClient();
 
-if (!hasToken()) {
-  console.error(
-    JSON.stringify(
-      {
-        ok: false,
-        error: '未找到麦当劳 MCP Token',
-        howTo:
-          '去 https://open.mcd.cn/mcp 用手机号登录 → 右上角「控制台」→ 激活 → 复制 Token；' +
-          '然后把它配到环境变量 MCD_MCP_TOKEN，或在 WorkBuddy 的【连接器】里启用 mcd-mcp。',
-      },
-      null,
-      2
-    )
-  );
-  process.exit(2);
-}
+// ⚠️ 故意不在进程启动时做 Token 校验。
+// 技能市场用户绝大多数没有麦当劳 MCP Token，如果一上来就 exit(2)，
+// 装完技能的人第一条命令就报错 —— 那是"装了等于没装"。
+// 现在改成：需要联网的命令才惰性校验，没 Token 时决策类命令自动回退到
+// 内置快照（scripts/snapshot.json），保证任何人都能立刻看到真实结果。
+
+const TOKEN_HELP =
+  '去 https://open.mcd.cn/mcp 用手机号登录 → 右上角「控制台」→ 激活 → 复制 Token；' +
+  '然后配置环境变量 MCD_MCP_TOKEN，或在 WorkBuddy 的【连接器】里启用 mcd-mcp。' +
+  '（想先看效果可加 --offline，用内置的门店菜单快照跑同一套算法。）';
 
 async function call(name, args) {
+  if (!hasToken()) {
+    const e = new Error(`命令 ${name} 需要麦当劳 MCP Token，但当前环境没有。${TOKEN_HELP}`);
+    e.needToken = true;
+    throw e;
+  }
   const r = await client.call(name, args);
   if (!r.ok) throw new Error(`${name} 调用失败：${r.error?.message || JSON.stringify(r.error)}`);
   return r.text;
@@ -200,12 +199,72 @@ async function resolveDeliveryStores(addressId, storeCode = null) {
 }
 
 let _menuCache = null;
+let _snapshot = null;
+
+/**
+ * 载入内置菜单快照并**还原成与实时菜单完全同构的结构**，
+ * 这样下游算法（solve / advise / card-roi）一行都不用改。
+ */
+function loadSnapshotMenu() {
+  if (_snapshot) return _snapshot;
+
+  const p = path.join(DIR, 'snapshot.json');
+  if (!fs.existsSync(p)) {
+    throw new Error('内置快照缺失（scripts/snapshot.json），且当前环境没有 MCP Token，无法继续。');
+  }
+  const raw = JSON.parse(fs.readFileSync(p, 'utf8'));
+
+  const items = raw.items.map((i) => ({ ...i, tags: i.tags || [] }));
+  const byCode = new Map(items.map((i) => [i.code, i]));
+  const categories = raw.categories.map((c) => ({
+    name: c.name,
+    key: c.key,
+    codes: items.filter((i) => i.categoryKeys.includes(c.key)).map((i) => i.code),
+    count: c.count,
+  }));
+
+  const menu = { items, byCode, categories, frequent: null, __snapshotMeta: raw.meta };
+  menu.__store = { storeCode: raw.meta.storeCode, beCode: null, orderType: 1, beType: 1, mode: 'takein' };
+  _snapshot = menu;
+  return menu;
+}
 
 /**
  * 载入菜单。返回的 menu 上挂了 `__store`，供 price/order 复用同一套
  * storeCode / beCode / orderType / beType —— 避免调用方各拼一套拼错。
+ *
+ * ⚠️ 离线兜底：没有 Token（或显式 --offline）时，读内置的门店菜单快照，
+ * 走**完全相同的算法**。技能市场用户装完就能看到真实结果，
+ * 而不是一句"未找到 Token"。实时数据永远优先。
  */
-async function loadMenu(storeCode, mode, { enrich = true, budget = 14, addressId = null, beCode = null } = {}) {
+async function loadMenu(
+  storeCode,
+  mode,
+  { enrich = true, budget = 14, addressId = null, beCode = null, offline = false } = {}
+) {
+  const useOffline = offline || !hasToken();
+
+  if (useOffline) {
+    if (mode === 'delivery') {
+      throw new Error('麦乐送需要实时接口（地址 → 可配送门店 → 外送价），离线快照只覆盖到店取餐');
+    }
+    const menu = loadSnapshotMenu();
+    menu.stats = {
+      mode,
+      storeCode: menu.__store.storeCode,
+      beCode: null,
+      sku: menu.items.length,
+      categories: menu.categories.length,
+      withNutrition: menu.items.filter((i) => i.nutrition?.kcal != null).length,
+      cardPrice: menu.items.filter((i) => i.isCardPrice).length,
+      enriched: 0,
+      mcpCalls: 0,
+      offline: true,
+    };
+    menu.__offline = true;
+    return menu;
+  }
+
   const { orderType, beType } = modeOf(mode);
 
   let sc = storeCode;
@@ -273,6 +332,14 @@ async function loadMenu(storeCode, mode, { enrich = true, budget = 14, addressId
 
 const COMMANDS = {
   async tools() {
+    // 纯诊断命令，但列表本身要问 MCP —— 没 Token 就直接说清楚，别抛栈
+    if (!hasToken()) {
+      return {
+        ok: false,
+        error: 'tools 需要麦当劳 MCP Token（它要向 MCP 实时查询工具清单）',
+        howTo: TOKEN_HELP,
+      };
+    }
     const tools = await client.listTools();
     return {
       ok: true,
@@ -302,6 +369,26 @@ const COMMANDS = {
 
   async stores(a) {
     const mode = a.mode || 'takein';
+
+    // 没 Token 时如实说明，并指向内置快照 —— 而不是抛一个裸栈
+    if (!hasToken()) {
+      const snap = _snapshot || loadSnapshotMenu();
+      return {
+        ok: false,
+        mode,
+        error: 'stores 需要麦当劳 MCP Token（门店列表是实时数据）',
+        howTo: TOKEN_HELP,
+        offlineFallback: {
+          note: '内置快照来自以下门店，可直接用 --store 跑离线算法：',
+          storeCode: snap.__snapshotMeta.storeCode,
+          storeName: snap.__snapshotMeta.storeName,
+          fetchedAt: snap.__snapshotMeta.fetchedAt,
+          sku: snap.items.length,
+          categories: snap.categories.length,
+          withNutrition: snap.items.filter((i) => i.nutrition?.kcal != null).length,
+        },
+      };
+    }
 
     if (mode === 'delivery') {
       const { stores } = await resolveDeliveryStores(a.address, a.store);
@@ -346,6 +433,7 @@ const COMMANDS = {
     const menu = await loadMenu(a.store, a.mode, {
       enrich: a['no-enrich'] !== true,
       addressId: a.address || null,
+      offline: !!a.offline,
     });
     return {
       ok: true,
@@ -357,7 +445,7 @@ const COMMANDS = {
 
   async solve(a) {
     if (!a.wants) throw new Error('缺少 --wants（例如 --wants "汉堡,饮料,小食"）');
-    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null, offline: !!a.offline });
     const wants = resolveWants(String(a.wants).split(','), menu);
 
     const constraints = {};
@@ -394,7 +482,7 @@ const COMMANDS = {
 
   async advise(a) {
     if (!a.cart) throw new Error('缺少 --cart（例如 --cart "1100:1,4810:1"）');
-    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null, offline: !!a.offline });
     const cart = cartOf(a.cart);
     const bad = cart.filter((c) => !menu.byCode.has(c.code));
     if (bad.length) throw new Error(`购物车里有不存在的商品 code：${bad.map((b) => b.code).join(', ')}`);
@@ -424,7 +512,7 @@ const COMMANDS = {
   },
 
   async 'card-roi'(a) {
-    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null });
+    const menu = await loadMenu(a.store, a.mode, { addressId: a.address || null, offline: !!a.offline });
     const r = cardRoi({
       items: menu.items,
       cart: cartOf(a.cart),
@@ -457,7 +545,7 @@ const COMMANDS = {
   async price(a) {
     const cart = cartOf(a.cart);
     if (!cart.length) throw new Error('缺少 --cart');
-    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null });
+    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null, offline: !!a.offline });
     const { storeCode, beCode, orderType, beType } = menu.__store;
 
     const args = { storeCode, orderType, beType, items: cart.map((c) => ({ productCode: c.code, quantity: c.qty })) };
@@ -494,7 +582,7 @@ const COMMANDS = {
   async order(a) {
     const cart = cartOf(a.cart);
     if (!cart.length) throw new Error('缺少 --cart');
-    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null });
+    const menu = await loadMenu(a.store, a.mode, { enrich: false, addressId: a.address || null, offline: !!a.offline });
     const { storeCode, beCode, orderType, beType, mode } = menu.__store;
 
     // 先核价：既拿到最终金额，也是 takeWayCode 的唯一来源
@@ -592,6 +680,17 @@ function humanize(cmd, d) {
     return L.join('\n');
   }
   if (cmd === 'card-roi') {
+    // 门店当期可能一款卡价商品都没有（实测早餐季就是 0 项）。
+    // 这时输出「盈亏平衡卡费 0.00」等于在说"白送卡都回本"，是误导 —— 必须如实说明不适用。
+    if (!d.eligibleCount) {
+      return [
+        `麦金卡可优惠 0/${d.eligibleTotal} 项 —— 这家店当期没有麦金卡优惠商品`,
+        d.basketSaveFen > 0 ? `本单可省 ${d.basketSaveYuan}` : '本单同样没有可用的卡价商品',
+        d.verdict || '',
+      ]
+        .filter(Boolean)
+        .join('\n');
+    }
     return [
       `麦金卡可优惠 ${d.eligibleCount}/${d.eligibleTotal} 项（占 ${Math.round((d.eligibleRatio || 0) * 100)}%）`,
       `本单可省 ${d.basketSaveYuan}`,
@@ -663,8 +762,12 @@ async function main() {
         '  node cli.mjs order --mode delivery --address <addressId> --cart "..." --confirm',
         '',
         '通用：--text 输出人话（默认 JSON）',
+        '      --offline 强制使用内置菜单快照（无需 Token）',
         '',
         'Token 来源：环境变量 MCD_MCP_TOKEN，或本机 ~/.workbuddy/mcp.json',
+        '没有 Token 也能用：solve / advise / card-roi / menu 会自动回退到内置的',
+        '门店菜单快照（scripts/snapshot.json），跑的是完全相同的算法。',
+        '需要 Token 的只有：stores / tools / price / order / addresses / 麦乐送全链路。',
       ].join('\n')
     );
     return;
